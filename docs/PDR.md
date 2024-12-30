@@ -34,7 +34,7 @@ A comprehensive platform enabling professionals to offer consultation services a
 - Web Frontend: React, TypeScript
 - Mobile: React Native
 - Video Communication: WebRTC with fallback options
-- Authentication: JWT with OAuth2
+- Authentication: JWT-based authentication with NextAuth.js (with future support for OAuth2 providers)
 - Cloud Infrastructure: AWS/GCP
 
 ## Development Phases
