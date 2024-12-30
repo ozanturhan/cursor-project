@@ -18,12 +18,20 @@ model User {
   email         String    @unique
   passwordHash  String?
   emailVerified DateTime?
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
   fullName      String
   userType      UserType
   image         String?
+  failedLoginAttempts Int @default(0)
+  lockedUntil   DateTime?
+  accounts      Account[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   profile       Profile?
+  sessions      Session[]
   bookingsAsClient    Booking[] @relation("ClientBookings")
   bookingsAsProfessional Booking[] @relation("ProfessionalBookings")
 }
@@ -64,6 +72,34 @@ model Booking {
   status          BookingStatus
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  token       String    @unique
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  expiresAt         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 enum UserType {
