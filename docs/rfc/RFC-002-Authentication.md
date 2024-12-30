@@ -61,19 +61,402 @@ A well-designed authentication system is crucial for:
    }
    ```
 
-3. **Backend Implementation**
+3. **Backend Implementation (NestJS)**
    - Basic JWT implementation
    - Session management
    - Password hashing with Argon2
    - Email service integration
    - Rate limiting for auth endpoints
 
-4. **Frontend Implementation**
-   - Registration form
-   - Login form
-   - Password reset flow
-   - Email verification UI
-   - Session handling
+4. **Frontend Implementation (Next.js + Next-Auth)**
+   - Next-Auth setup with custom provider
+   ```typescript
+   // pages/api/auth/[...nextauth].ts
+   import NextAuth from 'next-auth';
+   import CredentialsProvider from 'next-auth/providers/credentials';
+
+   export default NextAuth({
+     providers: [
+       CredentialsProvider({
+         name: 'Credentials',
+         credentials: {
+           email: { label: "Email", type: "email" },
+           password: { label: "Password", type: "password" }
+         },
+         async authorize(credentials) {
+           // Call our NestJS backend for authentication
+           const response = await fetch('/api/auth/login', {
+             method: 'POST',
+             body: JSON.stringify(credentials),
+             headers: { "Content-Type": "application/json" }
+           });
+           
+           const user = await response.json();
+           if (response.ok && user) {
+             return user;
+           }
+           return null;
+         }
+       })
+     ],
+     callbacks: {
+       async jwt({ token, user, account }) {
+         // Add custom claims to JWT
+         if (user) {
+           token.id = user.id;
+           token.userType = user.userType;
+         }
+         return token;
+       },
+       async session({ session, token }) {
+         // Add custom claims to session
+         if (session.user) {
+           session.user.id = token.id;
+           session.user.userType = token.userType;
+         }
+         return session;
+       }
+     },
+     pages: {
+       signIn: '/auth/signin',
+       signOut: '/auth/signout',
+       error: '/auth/error',
+       verifyRequest: '/auth/verify-request',
+       newUser: '/auth/new-user'
+     },
+     session: {
+       strategy: 'jwt',
+       maxAge: 24 * 60 * 60, // 24 hours
+     },
+     jwt: {
+       secret: process.env.JWT_SECRET,
+     }
+   });
+   ```
+
+   - Custom sign-in page
+   ```typescript
+   // pages/auth/signin.tsx
+   import { signIn } from 'next-auth/react';
+
+   export default function SignIn() {
+     const handleSubmit = async (e) => {
+       e.preventDefault();
+       const result = await signIn('credentials', {
+         email: e.target.email.value,
+         password: e.target.password.value,
+         redirect: false,
+       });
+       // Handle result
+     };
+
+     return (
+       // Sign-in form JSX
+     );
+   }
+   ```
+
+   - Protected routes with middleware
+   ```typescript
+   // middleware.ts
+   export { default } from 'next-auth/middleware';
+
+   export const config = {
+     matcher: [
+       '/dashboard/:path*',
+       '/profile/:path*',
+       '/bookings/:path*'
+     ]
+   };
+   ```
+
+   - Session handling in components
+   ```typescript
+   import { useSession } from 'next-auth/react';
+
+   export default function ProtectedComponent() {
+     const { data: session, status } = useSession();
+
+     if (status === 'loading') {
+       return <div>Loading...</div>;
+     }
+
+     if (status === 'unauthenticated') {
+       return <div>Access Denied</div>;
+     }
+
+     return (
+       // Protected content
+     );
+   }
+   ```
+
+5. **Integration Points**
+   - Next-Auth communicates with NestJS backend
+   - JWT token format consistency
+   - Session management synchronization
+   - Error handling standardization
+   - Type sharing between frontend and backend
+
+6. **API Communication After Authentication**
+   
+   a. **Web Application (Next.js)**
+   ```typescript
+   // lib/api.ts
+   import { getSession } from 'next-auth/react';
+
+   export const api = {
+     async fetch(endpoint: string, options: RequestInit = {}) {
+       const session = await getSession();
+       
+       return fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+         ...options,
+         headers: {
+           ...options.headers,
+           'Authorization': `Bearer ${session?.accessToken}`,
+           'Content-Type': 'application/json',
+         },
+       });
+     },
+     
+     // Utility methods
+     async get(endpoint: string) {
+       return this.fetch(endpoint).then(res => res.json());
+     },
+     
+     async post(endpoint: string, data: any) {
+       return this.fetch(endpoint, {
+         method: 'POST',
+         body: JSON.stringify(data),
+       }).then(res => res.json());
+     },
+     // ... other methods
+   };
+
+   // hooks/api/profile.ts
+   import { useQuery } from '@tanstack/react-query';
+   import { useSession } from 'next-auth/react';
+   
+   export function useProfile() {
+     const { data: session } = useSession();
+     
+     return useQuery({
+       queryKey: ['profile'],
+       queryFn: () => api.get('/users/profile'),
+       enabled: !!session,
+     });
+   }
+   
+   // Example usage in a component
+   function ProfileComponent() {
+     const { data: profile, isLoading, error } = useProfile();
+     
+     if (isLoading) return <div>Loading...</div>;
+     if (error) return <div>Error loading profile</div>;
+     
+     return (
+       <div>
+         <h1>{profile.name}</h1>
+         <p>{profile.email}</p>
+       </div>
+     );
+   }
+   ```
+
+   b. **Token Flow and Generation**
+   ```typescript
+   // NestJS auth.service.ts
+   @Injectable()
+   export class AuthService {
+     constructor(
+       private jwtService: JwtService,
+       private configService: ConfigService,
+     ) {}
+
+     async login(email: string, password: string) {
+       const user = await this.validateUser(email, password);
+       
+       // Generate both access and refresh tokens
+       const tokens = await this.generateTokens(user);
+       
+       return {
+         user: {
+           id: user.id,
+           email: user.email,
+           userType: user.userType,
+         },
+         ...tokens, // { accessToken, refreshToken }
+       };
+     }
+
+     private async generateTokens(user: User) {
+       const [accessToken, refreshToken] = await Promise.all([
+         this.jwtService.signAsync(
+           { sub: user.id, email: user.email, type: 'access' },
+           { expiresIn: '15m' }
+         ),
+         this.jwtService.signAsync(
+           { sub: user.id, email: user.email, type: 'refresh' },
+           { expiresIn: '7d' }
+         ),
+       ]);
+
+       return { accessToken, refreshToken };
+     }
+   }
+
+   // Next-Auth configuration update
+   // pages/api/auth/[...nextauth].ts
+   export default NextAuth({
+     // ... other config
+     callbacks: {
+       async jwt({ token, user }) {
+         // Initial sign in
+         if (user) {
+           return {
+             ...token,
+             accessToken: user.accessToken,
+             refreshToken: user.refreshToken,
+             accessTokenExpires: Date.now() + 15 * 60 * 1000, // 15 minutes
+           };
+         }
+
+         // Return previous token if not expired
+         if (Date.now() < token.accessTokenExpires) {
+           return token;
+         }
+
+         // Access token expired, try to refresh it
+         return refreshAccessToken(token);
+       },
+       async session({ session, token }) {
+         session.user.accessToken = token.accessToken;
+         session.user.id = token.sub;
+         session.user.userType = token.userType;
+         return session;
+       },
+     },
+   });
+
+   // Token refresh function
+   async function refreshAccessToken(token: JWT) {
+     try {
+       const response = await fetch('/api/auth/refresh', {
+         method: 'POST',
+         headers: {
+           'Authorization': `Bearer ${token.refreshToken}`,
+         },
+       });
+
+       const tokens = await response.json();
+
+       if (!response.ok) throw tokens;
+
+       return {
+         ...token,
+         accessToken: tokens.accessToken,
+         refreshToken: tokens.refreshToken,
+         accessTokenExpires: Date.now() + 15 * 60 * 1000,
+       };
+     } catch (error) {
+       return {
+         ...token,
+         error: 'RefreshAccessTokenError',
+       };
+     }
+   }
+   ```
+
+   c. **Mobile Application**
+   ```typescript
+   // mobile/src/utils/api.ts
+   class ApiClient {
+     private baseUrl: string;
+     private accessToken: string | null;
+
+     constructor(baseUrl: string) {
+       this.baseUrl = baseUrl;
+       this.accessToken = null;
+     }
+
+     setAccessToken(token: string) {
+       this.accessToken = token;
+     }
+
+     async fetch(endpoint: string, options: RequestInit = {}) {
+       if (!this.accessToken) {
+         throw new Error('Not authenticated');
+       }
+
+       return fetch(`${this.baseUrl}${endpoint}`, {
+         ...options,
+         headers: {
+           ...options.headers,
+           'Authorization': `Bearer ${this.accessToken}`,
+           'Content-Type': 'application/json',
+         },
+       });
+     }
+
+     // Utility methods similar to web app
+   }
+
+   // Usage in mobile app
+   const api = new ApiClient(CONFIG.API_URL);
+   
+   // After login
+   api.setAccessToken(authResult.accessToken);
+   ```
+
+   d. **Token Refresh Strategy**
+   ```typescript
+   // Shared logic for handling token expiration
+   async function handleTokenExpiration(response: Response) {
+     if (response.status === 401) {
+       // Token expired
+       const refreshResult = await refreshToken();
+       if (refreshResult.success) {
+         // Retry original request with new token
+         return retryRequest(/* ... */);
+       } else {
+         // Redirect to login
+         signOut();
+       }
+     }
+     return response;
+   }
+   ```
+
+   d. **Backend JWT Validation**
+   ```typescript
+   // NestJS JWT Guard
+   @Injectable()
+   export class JwtAuthGuard extends AuthGuard('jwt') {
+     constructor(private configService: ConfigService) {
+       super({
+         secret: configService.get('JWT_SECRET'),
+         signOptions: { expiresIn: '24h' },
+       });
+     }
+
+     handleRequest(err: any, user: any, info: any) {
+       if (err || !user) {
+         throw new UnauthorizedException('Invalid token');
+       }
+       return user;
+     }
+   }
+
+   // Usage in controllers
+   @Controller('api')
+   export class ApiController {
+     @UseGuards(JwtAuthGuard)
+     @Get('protected-route')
+     async getProtectedData() {
+       // Only accessible with valid JWT
+     }
+   }
+   ```
 
 ### Phase 2: OAuth Integration (Future)
 1. **Features**
@@ -257,5 +640,6 @@ interface AuthError {
 - NestJS Passport module
 - Argon2 for password hashing
 - JWT module
+- Next-Auth v5
 - Email service (SendGrid/AWS SES)
 - Rate limiting module 
