@@ -2,13 +2,57 @@
 
 This is an official starter Turborepo.
 
-## Using this example
+## Prerequisites
 
-Run the following command:
+### Node.js Version Requirements
+
+This project requires Node.js version 20.18.1 or higher. We use `.nvmrc` at the root level to maintain a consistent Node.js version across all packages and apps.
+
+To set up the correct Node.js version:
+
+1. Install [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
+2. Run the following commands from the project root:
+   ```sh
+   nvm install    # Installs the Node.js version specified in .nvmrc
+   nvm use       # Switches to the specified Node.js version
+   ```
+
+### Yarn Version Requirements
+
+This project uses Yarn 4.6.0 as the package manager. We use Corepack to ensure a consistent Yarn version.
+
+To set up Yarn:
+
+1. Enable Corepack (included with Node.js):
+   ```sh
+   corepack enable
+   ```
+
+2. Yarn will be automatically installed at the correct version (4.6.0) when you run any yarn command.
+
+## Development
+
+To develop all apps and packages:
 
 ```sh
-npx create-turbo@latest
+yarn install     # Install dependencies
+yarn dev         # Start development servers
 ```
+
+## Testing
+
+### Unit Tests
+```sh
+yarn test        # Run all unit tests
+```
+
+### End-to-End Tests
+```sh
+cd apps/backend
+./scripts/test-e2e.sh  # Run e2e tests in Docker
+```
+
+Note: E2E tests require Docker to be installed and running.
 
 ## What's inside?
 
