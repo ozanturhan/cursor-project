@@ -1,0 +1,23 @@
+# Cursor Rules Configuration
+
+# Documentation References
+WORKFLOW_RULES=docs/DEVELOPMENT_WORKFLOW.md
+RFC_PATH=docs/rfc
+PROGRESS_PATH=docs/progress/PROGRESS_TRACKER.md
+
+# Rule Validation
+VALIDATE_WORKFLOW=${WORKFLOW_RULES}
+VALIDATE_PROGRESS=${PROGRESS_PATH}
+VALIDATE_RFC=${RFC_PATH}
+
+# File Patterns
+TEST_FILES=**/*.{spec,test}.{ts,tsx}
+API_DOCS=docs/api/**/*
+ENV_FILES=.env*
+IGNORE_PATTERNS=node_modules,dist,.next,coverage
+
+# Automation Preferences
+AUTO_FORMAT=true
+AUTO_LINT=true
+TEST_ON_COMMIT=true
+BLOCK_ON_ERROR=true 
