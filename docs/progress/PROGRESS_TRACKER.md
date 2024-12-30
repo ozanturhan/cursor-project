@@ -32,6 +32,7 @@ Start Date: 2024-12-30
 - Phase 1D: UI/UX (Not Started)
 
 ## Recent Updates
+- 2024-12-30: Improved availability time format in database
 - 2024-12-30: Database schema implemented and migrations created
 - 2024-12-30: Project initialized
 - 2024-12-30: Monorepo structure set up
@@ -45,4 +46,5 @@ None
 - Following RFC-001 specifications
 - Development workflow guidelines established
 - Basic infrastructure is operational
-- Database models aligned with RFC specifications 
+- Database models aligned with RFC specifications
+- Time handling improved for better clarity and querying 

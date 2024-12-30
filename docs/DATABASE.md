@@ -40,8 +40,10 @@ Professional's available time slots.
 - `id`: UUID primary key
 - `profileId`: Foreign key to Profile
 - `dayOfWeek`: Integer (1-7, representing Monday-Sunday)
-- `startTime`: Time of day
-- `endTime`: Time of day
+- `startHour`: Integer (0-23, representing hour of day)
+- `startMinute`: Integer (0-59, representing minutes)
+- `endHour`: Integer (0-23, representing hour of day)
+- `endMinute`: Integer (0-59, representing minutes)
 - `createdAt`: Creation timestamp
 - Relations:
   - Many-to-one with Profile
@@ -79,8 +81,9 @@ Represents a consultation booking between a client and professional.
 2. **Soft Deletes**: Not implemented initially but can be added if needed by adding `deletedAt` timestamps.
 
 3. **Time Handling**: 
-   - Using `@db.Time` for availability times to store only time component
+   - Using separate hour and minute fields for availability times for better clarity and querying
    - Using `DateTime` for booking times to store full datetime
+   - Availability times are stored in 24-hour format (0-23 hours)
 
 4. **Relationships**:
    - User-Profile: One-to-one relationship for professionals
@@ -111,10 +114,10 @@ All accounts use the password: `test123`
 
 **Professionals:**
 - Therapist: therapist@example.com (Dr. Jane Smith)
-  - Available: Mondays and Wednesdays, 9 AM - 5 PM
+  - Available: Mondays and Wednesdays, 9:00 - 17:00
   - Rate: $120/hour
 - Career Coach: coach@example.com (John Coach)
-  - Available: Tuesdays and Thursdays, 10 AM - 6 PM
+  - Available: Tuesdays and Thursdays, 10:00 - 18:00
   - Rate: $90/hour
 
 **Clients:**
@@ -143,6 +146,11 @@ All accounts use the password: `test123`
 - Established relationships
 - Set up enums
 - Added timestamps
+
+### Update Availability Time Format (20241230155920_update_availability_time_format)
+- Changed availability time storage from DateTime to separate hour/minute fields
+- Improved time representation and querying capabilities
+- Migrated existing data to new format
 
 ## Future Considerations
 
