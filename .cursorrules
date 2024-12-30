@@ -6,7 +6,7 @@ RFC_PATH=docs/rfc
 PROGRESS_PATH=docs/progress/PROGRESS_TRACKER.md
 PRD_PATH=docs/PRD.md
 CONVERSATION_PATH=docs/conversations
-API_DOCS_PATH=docs/api
+API_DOCS_PATH=apps/backend/swagger
 
 # Path Validation
 REQUIRED_PATHS=${WORKFLOW_RULES},${RFC_PATH},${PROGRESS_PATH},${PRD_PATH},${CONVERSATION_PATH},${API_DOCS_PATH}
@@ -21,7 +21,6 @@ VALIDATE_CONVERSATION=${CONVERSATION_PATH}
 
 # File Patterns
 TEST_FILES=**/*.{spec,test}.{ts,tsx}
-API_DOCS=docs/api/**/*
 ENV_FILES=.env*
 IGNORE_PATTERNS=node_modules,dist,.next,coverage
 
@@ -29,4 +28,16 @@ IGNORE_PATTERNS=node_modules,dist,.next,coverage
 AUTO_FORMAT=true
 AUTO_LINT=true
 TEST_ON_COMMIT=true
-BLOCK_ON_ERROR=true 
+BLOCK_ON_ERROR=true
+
+# Turborepo Configuration
+USE_TURBOREPO=true
+TURBO_TASKS={
+  "dev": "turbo run dev --filter=",
+  "build": "turbo run build --filter=",
+  "test": "turbo run test --filter=",
+  "lint": "turbo run lint --filter=",
+  "db:generate": "turbo run db:generate --filter=",
+  "db:push": "turbo run db:push --filter="
+}
+PREFERRED_PACKAGE_MANAGER=yarn 
