@@ -14,7 +14,6 @@ RUN corepack enable && corepack prepare yarn@4.6.0 --activate
 COPY package.json yarn.lock turbo.json .yarnrc.yml ./
 COPY .yarn ./.yarn
 COPY apps/backend/package.json ./apps/backend/
-COPY packages ./packages
 COPY apps/backend/prisma ./apps/backend/prisma/
 
 # Install dependencies from root
