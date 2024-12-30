@@ -14,6 +14,19 @@ npx create-turbo@latest
 
 This Turborepo includes the following packages/apps:
 
+### Node.js Version Requirements
+
+This project requires Node.js version 20.18.1 or higher. We use `.nvmrc` at the root level to maintain a consistent Node.js version across all packages and apps.
+
+To set up the correct Node.js version:
+
+1. Install [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
+2. Run the following commands from the project root:
+   ```sh
+   nvm install    # Installs the Node.js version specified in .nvmrc
+   nvm use       # Switches to the specified Node.js version
+   ```
+
 ### Apps and Packages
 
 - `docs`: a [Next.js](https://nextjs.org/) app

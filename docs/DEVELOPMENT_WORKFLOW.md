@@ -30,12 +30,55 @@
 - Use strong typing for configs
 - Validate environment variables at startup
 
-### Branch Management
+### Git Workflow & Commit Conventions
+
+#### Branch Strategy
 - Feature branches from main
 - Follow conventional commits
 - Require PR reviews
 - Squash merge to main
 - Keep branches up to date
+
+#### Commit Message Format
+```
+type(scope): subject
+
+[optional body]
+[optional footer]
+```
+
+Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `chore`: Build process or auxiliary tool changes
+- `refactor`: Code change that neither fixes a bug nor adds a feature
+- `style`: Code style changes (formatting, missing semi-colons, etc)
+- `test`: Adding or modifying tests
+- `perf`: Performance improvements
+- `ci`: CI/CD related changes
+
+Examples:
+```
+feat(auth): implement user authentication
+docs(db): add database schema documentation
+chore(deps): update dependencies
+```
+
+#### When to Commit
+- After completing a logical unit of work
+- After documentation updates
+- After schema changes
+- After adding new features
+- After fixing bugs
+- Before switching tasks
+
+#### Commit Checklist
+1. Update relevant documentation
+2. Run linters and tests
+3. Update PROGRESS_TRACKER.md if needed
+4. Write clear commit message following conventions
+5. Review changes before committing
 
 ## Change Management Process
 

@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String?
+  emailVerified DateTime?
+  fullName      String
+  userType      UserType
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  profile       Profile?
+  bookingsAsClient    Booking[] @relation("ClientBookings")
+  bookingsAsProfessional Booking[] @relation("ProfessionalBookings")
+}
+
+model Profile {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  profession  String
+  bio         String?
+  hourlyRate  Decimal?
+  avatarUrl   String?
+  availability Availability[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Availability {
+  id          String    @id @default(uuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id])
+  dayOfWeek   Int
+  startTime   DateTime  @db.Time
+  endTime     DateTime  @db.Time
+  createdAt   DateTime  @default(now())
+}
+
+model Booking {
+  id              String    @id @default(uuid())
+  clientId        String
+  client          User      @relation("ClientBookings", fields: [clientId], references: [id])
+  professionalId  String
+  professional    User      @relation("ProfessionalBookings", fields: [professionalId], references: [id])
+  startTime       DateTime
+  endTime         DateTime
+  status          BookingStatus
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum UserType {
+  CLIENT
+  PROFESSIONAL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
