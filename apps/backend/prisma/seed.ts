@@ -8,6 +8,7 @@ async function main() {
   await prisma.booking.deleteMany();
   await prisma.availability.deleteMany();
   await prisma.profile.deleteMany();
+  await prisma.session.deleteMany();
   await prisma.user.deleteMany();
 
   // Create test password hash
@@ -21,6 +22,10 @@ async function main() {
       fullName: 'Dr. Jane Smith',
       userType: UserType.PROFESSIONAL,
       emailVerified: new Date(),
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
       profile: {
         create: {
           profession: 'Therapist',
@@ -61,30 +66,23 @@ async function main() {
       fullName: 'John Coach',
       userType: UserType.PROFESSIONAL,
       emailVerified: new Date(),
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
       profile: {
         create: {
           profession: 'Career Coach',
           bio: 'Certified career coach specializing in tech industry transitions.',
           hourlyRate: 90.00,
           availability: {
-            create: [
-              // Tuesday availability
-              {
-                dayOfWeek: 2,
-                startHour: 10,
-                startMinute: 0,
-                endHour: 18,
-                endMinute: 0,
-              },
-              // Thursday availability
-              {
-                dayOfWeek: 4,
-                startHour: 10,
-                startMinute: 0,
-                endHour: 18,
-                endMinute: 0,
-              },
-            ],
+            create: {
+              dayOfWeek: 2,
+              startHour: 10,
+              startMinute: 0,
+              endHour: 18,
+              endMinute: 0,
+            },
           },
         },
       },
@@ -99,6 +97,10 @@ async function main() {
       fullName: 'Alice Johnson',
       userType: UserType.CLIENT,
       emailVerified: new Date(),
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
     },
   });
 
@@ -109,6 +111,27 @@ async function main() {
       fullName: 'Bob Wilson',
       userType: UserType.CLIENT,
       emailVerified: new Date(),
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+    },
+  });
+
+  // Create sample sessions for testing
+  await prisma.session.create({
+    data: {
+      userId: therapist.id,
+      token: 'sample-session-token-1',
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+    },
+  });
+
+  await prisma.session.create({
+    data: {
+      userId: client1.id,
+      token: 'sample-session-token-2',
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   });
 
