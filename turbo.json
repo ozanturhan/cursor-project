@@ -14,10 +14,9 @@
       "dependsOn": ["^lint"]
     },
     "dev": {
-      "dependsOn": ["clean"],
+      "dependsOn": ["clean", "^build", "db:generate"],
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build", "db:generate"]
+      "persistent": true
     },
     "clean": {
       "cache": false

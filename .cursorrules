@@ -41,3 +41,6 @@ TURBO_TASKS={
   "db:push": "turbo run db:push --filter="
 }
 PREFERRED_PACKAGE_MANAGER=yarn
+
+# Backend E2E Tests (Integration Tests)
+BACKEND_E2E_TESTS=apps/backend/scripts/test-e2e.sh
