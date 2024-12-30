@@ -26,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   
   // Save the OpenAPI spec as JSON file
-  const swaggerDir = join(process.cwd(), 'swagger');
+  const swaggerDir = join(process.cwd(), 'src/swagger');
   if (!existsSync(swaggerDir)) {
     mkdirSync(swaggerDir, { recursive: true });
   }
