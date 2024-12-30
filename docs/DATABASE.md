@@ -11,6 +11,10 @@ Represents both clients and professionals in the system.
 - `email`: Unique email address
 - `passwordHash`: Optional hashed password (null for OAuth users)
 - `emailVerified`: Timestamp of email verification
+- `emailVerificationToken`: Token for email verification process
+- `emailVerificationExpires`: Expiration time for email verification token
+- `passwordResetToken`: Token for password reset process
+- `passwordResetExpires`: Expiration time for password reset token
 - `fullName`: User's full name
 - `userType`: Enum (CLIENT/PROFESSIONAL)
 - `image`: Optional profile image URL
@@ -18,8 +22,38 @@ Represents both clients and professionals in the system.
 - `updatedAt`: Last update timestamp
 - Relations:
   - One-to-one with Profile (for professionals)
+  - One-to-many with Session
+  - One-to-many with Account (for OAuth)
   - One-to-many with Booking (as client)
   - One-to-many with Booking (as professional)
+
+### Account
+Represents OAuth provider accounts linked to a user.
+- `id`: UUID primary key
+- `userId`: Foreign key to User
+- `type`: Provider type (oauth, email, etc.)
+- `provider`: OAuth provider name
+- `providerAccountId`: Provider's unique account identifier
+- `refreshToken`: OAuth refresh token
+- `accessToken`: OAuth access token
+- `expiresAt`: Token expiration timestamp
+- `tokenType`: Type of access token
+- `scope`: OAuth scopes
+- `idToken`: OAuth ID token
+- `sessionState`: OAuth session state
+- Relations:
+  - Many-to-one with User
+
+### Session
+Represents an active user session.
+- `id`: UUID primary key
+- `userId`: Foreign key to User
+- `token`: Unique session token
+- `expiresAt`: Session expiration timestamp
+- `createdAt`: Creation timestamp
+- `updatedAt`: Last update timestamp
+- Relations:
+  - Many-to-one with User
 
 ### Profile
 Professional's detailed profile information.
@@ -151,6 +185,12 @@ All accounts use the password: `test123`
 - Changed availability time storage from DateTime to separate hour/minute fields
 - Improved time representation and querying capabilities
 - Migrated existing data to new format
+
+### Add Authentication Fields (20241230170211_add_auth_fields)
+- Added email verification fields to User model
+- Added password reset fields to User model
+- Created Session model for managing user sessions
+- Added relationships between User and Session models
 
 ## Future Considerations
 
