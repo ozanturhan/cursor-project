@@ -2,8 +2,7 @@
   "name": "consultation-platform",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "packageManager": "yarn@4.6.0",
   "scripts": {

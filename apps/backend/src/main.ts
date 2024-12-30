@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
 async function bootstrap() {
@@ -26,7 +26,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   
   // Save the OpenAPI spec as JSON file
-  const outputPath = join(__dirname, '..', 'swagger', 'openapi.json');
+  const swaggerDir = join(process.cwd(), 'swagger');
+  if (!existsSync(swaggerDir)) {
+    mkdirSync(swaggerDir, { recursive: true });
+  }
+  
+  const outputPath = join(swaggerDir, 'openapi.json');
   writeFileSync(outputPath, JSON.stringify(document, null, 2));
   console.log(`OpenAPI specification has been saved to: ${outputPath}`);
 
