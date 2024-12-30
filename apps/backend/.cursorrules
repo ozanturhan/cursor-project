@@ -1,0 +1,51 @@
+# Backend Project Rules Configuration
+
+# Source Code Organization
+SRC_PATH=src
+MODULES_PATH=${SRC_PATH}/modules
+TEST_PATH=test
+PRISMA_PATH=prisma
+
+# Required Files
+REQUIRED_FILES=.env,.env.test,package.json,tsconfig.json,nest-cli.json
+
+# Test Configuration
+TEST_PATTERN=**/*.{spec,test,e2e-spec}.ts
+TEST_CONFIG=jest.config.js
+E2E_CONFIG=test/jest-e2e.config.js
+TEST_COVERAGE_THRESHOLD=80
+
+# Database
+PRISMA_SCHEMA=${PRISMA_PATH}/schema.prisma
+MIGRATION_PATH=${PRISMA_PATH}/migrations
+SEED_PATH=${PRISMA_PATH}/seed.ts
+
+# API Documentation
+SWAGGER_PATH=${SRC_PATH}/swagger
+OPENAPI_OUTPUT=openapi.json
+
+# Module Structure Rules
+REQUIRED_MODULE_FILES=*.controller.ts,*.service.ts,*.module.ts
+DTO_PATTERN=**/*.dto.ts
+ENTITY_PATTERN=**/*.entity.ts
+GUARD_PATTERN=**/*.guard.ts
+
+# Code Quality
+MAX_FILE_LINES=500
+MAX_FUNCTION_LINES=50
+NAMING_CONVENTION=kebab-case
+STRICT_TYPING=true
+REQUIRE_TESTS=true
+
+# Validation Rules
+VALIDATE_ENV=true
+VALIDATE_PRISMA=true
+VALIDATE_CONTROLLERS=true
+VALIDATE_SERVICES=true
+VALIDATE_DTOS=true
+
+# Automation
+AUTO_GENERATE_TYPES=true
+AUTO_MIGRATE_DB=false
+AUTO_UPDATE_DOCS=true
+BLOCK_ON_TEST_FAIL=true 
