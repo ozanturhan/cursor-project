@@ -16,19 +16,25 @@ async function bootstrap() {
     .setDescription('The consultation platform API description')
     .setVersion('1.0')
     .addTag('auth', 'Authentication endpoints')
+    .addTag('users', 'User management endpoints')
+    .addTag('bookings', 'Booking management endpoints')
     .addBearerAuth()
+    .addServer('http://localhost:3001', 'Local development')
+    .addServer('https://api.consultation-platform.com', 'Production')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   
   // Save the OpenAPI spec as JSON file
-  writeFileSync(
-    join(__dirname, '..', 'openapi.json'),
-    JSON.stringify(document, null, 2)
-  );
+  const outputPath = join(__dirname, '..', 'swagger', 'openapi.json');
+  writeFileSync(outputPath, JSON.stringify(document, null, 2));
+  console.log(`OpenAPI specification has been saved to: ${outputPath}`);
 
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3001);
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
+  console.log(`Swagger UI is available at: http://localhost:${port}/api`);
 }
 bootstrap();
