@@ -1,4 +1,4 @@
-# Consultation Platform - Project Definition Report
+# Consultation Platform - Product Requirements Document
 
 ## Project Overview
 A comprehensive platform enabling professionals to offer consultation services and classes through a unified calendar and booking system, supporting both one-on-one and group video communications across web and mobile platforms.
