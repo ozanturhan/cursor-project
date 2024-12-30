@@ -56,4 +56,9 @@ export class ResetPasswordDto {
 export class VerifyEmailDto {
   @IsString()
   token: string;
+}
+
+export class RefreshTokenDto {
+  @IsString()
+  refreshToken: string;
 } 

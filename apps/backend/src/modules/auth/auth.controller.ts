@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, Query, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, AuthResponse, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, AuthResponse, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, RefreshTokenDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 
@@ -39,6 +39,12 @@ export class AuthController {
     @Body() dto: ResetPasswordDto,
   ): Promise<void> {
     return this.authService.resetPassword(token, dto.password);
+  }
+
+  @Post('refresh')
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
+  async refreshToken(@Body() dto: RefreshTokenDto): Promise<AuthResponse> {
+    return this.authService.refreshToken(dto.refreshToken);
   }
 
   @Get('me')

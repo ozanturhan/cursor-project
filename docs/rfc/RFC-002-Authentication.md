@@ -643,3 +643,24 @@ interface AuthError {
 - Next-Auth v5
 - Email service (SendGrid/AWS SES)
 - Rate limiting module 
+
+## Future Considerations
+
+### Advanced Security Measures (Post-MVP)
+1. **Device Fingerprinting**
+   - Store device information with sessions
+   - Restrict refresh token usage to originating device
+   - Enhance token security against theft
+
+2. **Session Management**
+   - Implement maximum concurrent sessions
+   - Add session viewing and revocation
+   - Auto-invalidate oldest sessions when limit reached
+
+3. **Token Security**
+   - Implement token rotation with grace period
+   - Add activity tracking and alerting
+   - Consider IP-based restrictions
+   - Implement absolute token lifetime
+
+These security measures will be evaluated and implemented in later phases based on user needs and security requirements. 

@@ -173,6 +173,58 @@ export class AuthService {
     });
   }
 
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    try {
+      // Verify the refresh token
+      const payload = await this.jwtService.verifyAsync(refreshToken);
+      
+      if (payload.type !== 'refresh') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
+      // Check if the token exists in the session
+      const session = await this.prisma.session.findFirst({
+        where: {
+          token: refreshToken,
+          expiresAt: {
+            gt: new Date(),
+          },
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      if (!session) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Generate new tokens
+      const tokens = await this.generateTokens(session.user);
+
+      // Update session with new refresh token
+      await this.prisma.session.update({
+        where: { id: session.id },
+        data: {
+          token: tokens.refreshToken,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        },
+      });
+
+      return {
+        user: {
+          id: session.user.id,
+          email: session.user.email,
+          fullName: session.user.fullName,
+          userType: session.user.userType,
+        },
+        ...tokens,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
   private async generateTokens(user: { id: string; email: string }) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
