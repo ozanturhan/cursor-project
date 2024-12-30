@@ -4,6 +4,7 @@
 
 ### Documentation Rules
 - Always check current RFC before modifications
+- Review relevant chat histories in docs/chat_history before starting work
 - Keep PROGRESS_TRACKER.md current
 - Document architectural decisions
 - Add API documentation for new endpoints
@@ -13,6 +14,17 @@
   - Follow the format in docs/conversations/README.md
   - Link conversation records to relevant RFCs and PRs
   - Update records if decisions change
+
+### Chat History Guidelines
+- Check docs/chat_history before starting new work
+- Review relevant chat files for context
+- Maintain chronological order of discussions
+- Preserve exact chat messages for reference
+- Use chat histories to:
+  - Understand previous decisions
+  - Continue interrupted work
+  - Track implementation progress
+  - Reference past solutions
 
 ### Code Style Rules
 - Use TypeScript strict mode
@@ -93,12 +105,18 @@ chore(deps): update dependencies
    - Ensure changes align with RFC
    - Identify potential deviations
 
-2. **Progress Tracking**
+2. **Chat History Review**
+   - Check docs/chat_history for relevant discussions
+   - Review previous implementation details
+   - Understand past decisions and context
+   - Note any unfinished work or known issues
+
+3. **Progress Tracking**
    - Verify current phase in tracker
    - Confirm task is in current phase
    - Check for dependencies
 
-3. **Technical Review**
+4. **Technical Review**
    - Review related documentation
    - Validate technical approach
    - Check for existing solutions
