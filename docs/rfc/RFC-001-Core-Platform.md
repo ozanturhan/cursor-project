@@ -13,13 +13,16 @@ Core Platform MVP Implementation
 [ ] Deprecated
 
 ## Last Updated
-2024-03-20
+2024-12-30
 
 ## Authors
 - Project Team
 
 ## Overview
 This RFC outlines the implementation details for the Core Platform MVP, which includes user authentication, professional profiles, availability calendar, and basic booking system. These components form the foundation of the consultation platform.
+
+## Related RFCs
+- RFC-002: Authentication System Design (Authentication implementation details)
 
 ## Motivation
 The core platform components are essential to enable basic functionality for both professionals and clients. This phase will establish the fundamental infrastructure and user flows necessary for subsequent features.
@@ -30,7 +33,7 @@ The core platform components are essential to enable basic functionality for bot
 
 #### Backend Architecture (NestJS)
 1. Core Modules
-   - AuthModule (Next-Auth integration)
+   - AuthModule (Implementation detailed in RFC-002)
    - UsersModule
    - ProfilesModule
    - CalendarModule
@@ -40,7 +43,7 @@ The core platform components are essential to enable basic functionality for bot
 2. Infrastructure
    - Prisma for database access
    - Class-validator for DTO validation
-   - Passport for authentication strategies
+   - Passport for authentication strategies (see RFC-002)
    - Guards for route protection
    - Custom decorators for user context
    - Interceptors for response transformation
@@ -101,14 +104,29 @@ model User {
   email         String    @unique
   passwordHash  String?
   emailVerified DateTime?
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
   fullName      String
   userType      UserType
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   profile       Profile?
+  sessions      Session[]
   bookingsAsClient    Booking[] @relation("ClientBookings")
   bookingsAsProfessional Booking[] @relation("ProfessionalBookings")
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  token       String    @unique
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Profile {
@@ -128,9 +146,11 @@ model Availability {
   id          String    @id @default(uuid())
   profileId   String
   profile     Profile   @relation(fields: [profileId], references: [id])
-  dayOfWeek   Int
-  startTime   DateTime  @db.Time
-  endTime     DateTime  @db.Time
+  dayOfWeek   Int       // 1-7 representing Monday-Sunday
+  startHour   Int       // 0-23 representing hour of day
+  startMinute Int       // 0-59 representing minutes
+  endHour     Int       // 0-23 representing hour of day
+  endMinute   Int       // 0-59 representing minutes
   createdAt   DateTime  @default(now())
 }
 
@@ -230,51 +250,48 @@ export class ProfilesService {
 
 ### Implementation Plan Update
 
-#### Phase 1A: Foundation (2 weeks)
+#### Phase 1A: Foundation (2-3 weeks)
 - Next.js project setup with TypeScript
 - NestJS backend setup:
   - Module structure
   - Prisma schema and configuration
-  - Authentication integration
   - API structure
-- Next-Auth configuration:
-  - Social providers setup
-  - Credential provider
-  - Email verification
+- Authentication implementation (as per RFC-002 Phase 1)
 - Database schema implementation with Prisma
-- Mobile authentication flow
+- Basic security measures
 
 #### Phase 1B: Profile System (2 weeks)
 - NestJS Profile module implementation
-- TypeORM entities and repositories
+- Profile management features
 - Image upload service
-- Search/filter functionality
-- React Query integration
-
-### Phase 1C: Calendar (2 weeks)
 - Availability management
-- Basic booking system
-- Notification foundation
 
-### Phase 1D: UI/UX (2 weeks)
-- Component implementation
-- Integration testing
-- UI polish and responsiveness
+#### Phase 1C: Calendar & Booking (2 weeks)
+- Calendar view implementation
+- Booking management
+- Availability checks
+- Notification system setup
+
+#### Phase 1D: UI/UX (2 weeks)
+- Responsive design implementation
+- Accessibility features
+- Performance optimization
+- User experience improvements
 
 ## Timeline
 - Start Date: [Project Start Date]
 - Target Completion: 8 weeks from start
 
 ## Dependencies
-- Node.js v18+
+- Authentication system (RFC-002)
+- Node.js v20+
 - Next.js 14+
 - NestJS v10+
-- Next-Auth v5
 - PostgreSQL 14+
-- TypeORM
+- Prisma v5+
 - React Query v5+
-- AWS S3/GCP Storage
-- SendGrid/AWS SES for emails
+- AWS S3/GCP Storage (for file uploads)
+- SendGrid/AWS SES (for emails)
 
 ## Security Considerations
 - OAuth state parameter validation
