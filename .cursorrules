@@ -40,4 +40,11 @@ TURBO_TASKS={
   "db:generate": "turbo run db:generate --filter=",
   "db:push": "turbo run db:push --filter="
 }
-PREFERRED_PACKAGE_MANAGER=yarn 
+PREFERRED_PACKAGE_MANAGER=yarn
+
+# Node Version Management
+USE_NVM=true
+SHELL_INIT_COMMANDS=[
+  "[ -s \"$HOME/.nvm/nvm.sh\" ] && . \"$HOME/.nvm/nvm.sh\"",
+  "nvm use"
+] 
