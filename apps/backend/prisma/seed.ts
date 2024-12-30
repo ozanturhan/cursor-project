@@ -31,14 +31,18 @@ async function main() {
               // Monday availability
               {
                 dayOfWeek: 1,
-                startTime: new Date('2024-01-01T09:00:00Z'),
-                endTime: new Date('2024-01-01T17:00:00Z'),
+                startHour: 9,
+                startMinute: 0,
+                endHour: 17,
+                endMinute: 0,
               },
               // Wednesday availability
               {
                 dayOfWeek: 3,
-                startTime: new Date('2024-01-01T09:00:00Z'),
-                endTime: new Date('2024-01-01T17:00:00Z'),
+                startHour: 9,
+                startMinute: 0,
+                endHour: 17,
+                endMinute: 0,
               },
             ],
           },
@@ -67,14 +71,18 @@ async function main() {
               // Tuesday availability
               {
                 dayOfWeek: 2,
-                startTime: new Date('2024-01-01T10:00:00Z'),
-                endTime: new Date('2024-01-01T18:00:00Z'),
+                startHour: 10,
+                startMinute: 0,
+                endHour: 18,
+                endMinute: 0,
               },
               // Thursday availability
               {
                 dayOfWeek: 4,
-                startTime: new Date('2024-01-01T10:00:00Z'),
-                endTime: new Date('2024-01-01T18:00:00Z'),
+                startHour: 10,
+                startMinute: 0,
+                endHour: 18,
+                endMinute: 0,
               },
             ],
           },
