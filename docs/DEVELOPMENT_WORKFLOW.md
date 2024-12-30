@@ -8,6 +8,11 @@
 - Document architectural decisions
 - Add API documentation for new endpoints
 - Update RFC if implementation deviates
+- Maintain conversation records for significant decisions
+  - Create new record for important technical discussions
+  - Follow the format in docs/conversations/README.md
+  - Link conversation records to relevant RFCs and PRs
+  - Update records if decisions change
 
 ### Code Style Rules
 - Use TypeScript strict mode
@@ -109,6 +114,8 @@ chore(deps): update dependencies
    - Update technical docs
    - Add inline documentation
    - Document design decisions
+   - Create/update conversation records
+   - Link related documents and decisions
 
 ### After Making Changes
 1. **Validation**
