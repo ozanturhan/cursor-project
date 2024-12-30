@@ -8,6 +8,7 @@
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
     "prepare": "husky install"
   },
   "devDependencies": {

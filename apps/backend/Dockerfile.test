@@ -1,0 +1,27 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install OpenSSL and other required dependencies
+RUN apt-get update -y && \
+    apt-get install -y openssl procps && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
+COPY package.json yarn.lock turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY packages ./packages
+COPY apps/backend/prisma ./apps/backend/prisma/
+
+# Install dependencies from root
+RUN yarn install
+
+# Copy backend source code
+COPY apps/backend ./apps/backend/
+
+# Generate Prisma client
+WORKDIR /app/apps/backend
+RUN npx prisma generate
+
+# Run Prisma migrations
+CMD ["sh", "-c", "npx prisma migrate deploy && yarn test:e2e"] 

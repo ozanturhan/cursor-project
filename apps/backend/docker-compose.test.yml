@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  test-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+    ports:
+      - "5433:5432"  # Using different port to avoid conflict with dev database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  test-api:
+    build:
+      context: ../../  # Changed to root of monorepo
+      dockerfile: apps/backend/Dockerfile.test
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@test-db:5432/test_db?schema=public
+      NODE_ENV: test
+      JWT_SECRET: test-secret-key-for-e2e-tests
+      EMAIL_FROM: test@example.com
+      EMAIL_HOST: smtp.example.com
+      EMAIL_PORT: 587
+      EMAIL_USER: test
+      EMAIL_PASS: test
+      POSTGRES_HOST: test-db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+    depends_on:
+      test-db:
+        condition: service_healthy
+    working_dir: /app/apps/backend
+    command: sh -c "npx prisma migrate deploy && yarn test:e2e" 

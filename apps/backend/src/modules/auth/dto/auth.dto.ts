@@ -3,17 +3,17 @@ import { UserType } from '@prisma/client';
 
 export class RegisterDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @IsString()
-  fullName: string;
+  fullName!: string;
 
   @IsEnum(UserType)
-  userType: UserType;
+  userType!: UserType;
 
   @IsString()
   @IsOptional()
@@ -22,43 +22,43 @@ export class RegisterDto {
 
 export class LoginDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
-  password: string;
+  password!: string;
 }
 
 export class AuthResponse {
-  user: {
+  user!: {
     id: string;
     email: string;
     fullName: string;
     userType: UserType;
   };
-  accessToken: string;
-  refreshToken: string;
+  accessToken!: string;
+  refreshToken!: string;
 }
 
 export class ForgotPasswordDto {
   @IsEmail()
-  email: string;
+  email!: string;
 }
 
 export class ResetPasswordDto {
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @IsString()
-  token: string;
+  token!: string;
 }
 
 export class VerifyEmailDto {
   @IsString()
-  token: string;
+  token!: string;
 }
 
 export class RefreshTokenDto {
   @IsString()
-  refreshToken: string;
+  refreshToken!: string;
 } 

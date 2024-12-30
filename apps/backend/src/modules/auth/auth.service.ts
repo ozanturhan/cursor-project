@@ -43,7 +43,7 @@ export class AuthService {
         emailVerificationExpires: verificationExpires,
         profile: dto.userType === UserType.PROFESSIONAL ? {
           create: {
-            profession: dto.profession,
+            profession: dto.profession || '',
           },
         } : undefined,
       },
@@ -61,6 +61,15 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user?.passwordHash) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      throw new UnauthorizedException('Please verify your email before logging in');
     }
 
     // Verify password
@@ -100,6 +109,7 @@ export class AuthService {
         emailVerificationExpires: {
           gt: new Date(),
         },
+        emailVerified: null, // Only verify if not already verified
       },
     });
 
@@ -107,14 +117,18 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: new Date(),
-        emailVerificationToken: null,
-        emailVerificationExpires: null,
-      },
-    });
+    try {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          emailVerified: new Date(),
+          emailVerificationToken: null,
+          emailVerificationExpires: null,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException('Failed to verify email. Please try again.');
+    }
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -232,6 +246,7 @@ export class AuthService {
           sub: user.id,
           email: user.email,
           type: 'access',
+          iat: Date.now(),
         },
         {
           expiresIn: '15m',
@@ -242,6 +257,7 @@ export class AuthService {
           sub: user.id,
           email: user.email,
           type: 'refresh',
+          iat: Date.now(),
         },
         {
           expiresIn: '7d',
