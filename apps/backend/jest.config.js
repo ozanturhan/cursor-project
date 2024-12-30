@@ -3,16 +3,13 @@ module.exports = {
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      isolatedModules: true
-    }]
+    '^.+\\.(t|j)s$': 'ts-jest'
   },
-  transformIgnorePatterns: [
-    '\\.js$',
-    'node_modules'
-  ],
-  collectCoverageFrom: ['**/*.ts'],
+  collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
-  testEnvironment: 'node'
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1'
+  }
 };
   
