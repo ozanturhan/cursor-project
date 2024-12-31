@@ -14,13 +14,19 @@ A comprehensive platform enabling professionals to offer consultation services a
 ### Platform Components
 1. Backend Services
    - User Management & Authentication
+     * JWT-based authentication
+     * Email verification flow
+     * Role-based access control
+     * Future OAuth provider support
    - Calendar & Booking System
    - Video Communication Service
    - Payment Processing
    - Notification System
 
 2. Web Application
-   - React-based responsive web interface
+   - Next.js-based responsive web interface
+   - Role-based routing and components
+   - Protected routes with Next-Auth
    - Real-time calendar integration
    - Video communication interface
 
@@ -30,12 +36,23 @@ A comprehensive platform enabling professionals to offer consultation services a
    - Push notifications
 
 ### Technology Stack
-- Backend: Node.js with Express, PostgreSQL
-- Web Frontend: React, TypeScript
+- Backend: NestJS, PostgreSQL, Prisma ORM
+- Web Frontend: Next.js 14, TypeScript, TailwindCSS
 - Mobile: React Native
 - Video Communication: WebRTC with fallback options
-- Authentication: JWT-based authentication with NextAuth.js (with future support for OAuth2 providers)
+- Authentication: 
+  * Next-Auth for frontend session management
+  * JWT-based backend authentication
+  * Email verification system
+  * Role-based access control
 - Cloud Infrastructure: AWS/GCP
+
+### Database Schema
+- User model with multi-role support
+- Profile management for professionals
+- Booking system with role distinction
+- Future OAuth integration support
+- Calendar and availability management
 
 ## Development Phases
 
@@ -101,11 +118,88 @@ Total estimated timeline: 10-14 months
    - CDN services
 
 ## User Requirements & Personas
-TODO: Define detailed user personas and requirements
-- Professional user types and their specific needs
-- Client user types and their needs
-- User journey maps for key flows
-- Use cases for each user type
+
+### User Types
+1. Client Users
+   - Seeking professional consultation services
+   - Booking and attending sessions
+   - Managing appointments and payments
+   - Viewing professional profiles and reviews
+
+2. Professional Users
+   - Offering consultation services
+   - Managing availability and bookings
+   - Setting rates and service descriptions
+   - Building professional profile
+
+3. Dual-Role Users
+   - Users can maintain both client and professional roles simultaneously
+   - Seamless switching between roles within the same account
+   - Separate dashboards for each role
+   - Clear context separation for bookings and services
+
+### Use Cases for Dual-Role Functionality
+
+1. Professional-to-Professional Consultations
+   Example: A business consultant seeking legal advice
+   - User has professional profile as business consultant
+   - Can book sessions as client with legal professionals
+   - Maintains separate calendars for each role
+
+2. Skill Exchange and Peer Learning
+   Example: Language teachers exchanging lessons
+   - Both users are professionals in different languages
+   - Can book sessions with each other as clients
+   - Manage availability for their own services
+
+3. Professional Development
+   Example: Therapist seeking supervision
+   - Maintains professional profile for client sessions
+   - Books sessions as client for professional development
+   - Clear separation between client bookings and professional supervision
+
+4. Role Transition
+   Example: Professional starting new service area
+   - Initially books sessions as client for learning
+   - Gradually builds professional profile in new area
+   - Maintains existing professional services
+
+### Role Management Features
+1. Profile Management
+   - Separate professional and client profiles
+   - Option to activate/deactivate professional status
+   - Clear indication of current role context
+
+2. Calendar Integration
+   - Unified calendar showing all bookings
+   - Visual distinction between client and professional appointments
+   - Smart conflict prevention across roles
+
+3. Booking System
+   - Role selection during booking process
+   - Clear separation of booking histories
+   - Ability to manage bookings in both roles
+
+4. Dashboard
+   - Role-specific dashboards
+   - Easy switching between roles
+   - Combined overview of all activities
+
+### Implementation Considerations
+1. User Experience
+   - Intuitive role switching
+   - Clear visual indicators of current role
+   - Consistent navigation patterns
+
+2. Data Management
+   - Proper separation of role-specific data
+   - Unified user identity
+   - Role-based access control
+
+3. Security
+   - Role-specific permissions
+   - Secure role switching
+   - Privacy considerations for dual roles
 
 ## Feature Specifications
 TODO: Detail feature specifications
