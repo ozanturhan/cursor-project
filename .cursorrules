@@ -49,6 +49,25 @@ FRONTEND_RULES={
       "Use pattern: const { param1, param2 } = await searchParams"
     ],
     "example": "export default async function Page({ searchParams }) {\n  const { value } = await searchParams;\n}"
+  },
+  "dataFetching": {
+    "rules": [
+      "Always use Axios instead of fetch",
+      "Use React Query for data fetching and caching",
+      "Use React Query mutations for data mutations",
+      "Configure Axios instance with base URL and interceptors",
+      "Handle errors globally through Axios interceptors"
+    ],
+    "avoid": [
+      "Direct fetch calls",
+      "Manual loading/error states",
+      "Direct API calls without React Query"
+    ],
+    "examples": {
+      "query": "const { data, isLoading } = useQuery(['key'], () => api.get('/endpoint'))",
+      "mutation": "const { mutate } = useMutation((data) => api.post('/endpoint', data))",
+      "axios": "import { api } from '@/lib/axios';"
+    }
   }
 }
 
