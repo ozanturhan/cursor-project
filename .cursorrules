@@ -24,6 +24,26 @@ TEST_FILES=**/*.{spec,test}.{ts,tsx}
 ENV_FILES=.env*
 IGNORE_PATTERNS=node_modules,dist,.next,coverage
 
+# Frontend Rules
+FRONTEND_RULES={
+  "useEffect": {
+    "avoid": true,
+    "allowedCases": [
+      "data fetching (when not possible with React Query or similar)",
+      "managing subscriptions/event listeners",
+      "integrating with non-React libraries",
+      "managing focus/scroll position"
+    ],
+    "alternatives": {
+      "url-params": "use server components or router events",
+      "data-fetching": "use React Query or SWR",
+      "form-handling": "use react-hook-form or similar",
+      "state-updates": "use event handlers or state management libraries",
+      "api-calls": "use React Query mutations or similar"
+    }
+  }
+}
+
 # Automation Preferences
 AUTO_FORMAT=true
 AUTO_LINT=true
