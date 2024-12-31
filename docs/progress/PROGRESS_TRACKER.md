@@ -21,7 +21,7 @@ Start Date: 2024-12-30
     - [x] Session handling
     - [x] Email verification flow
   - [x] Security measures
-    - [x] Password hashing with Argon2
+    - [x] Password hashing with bcrypt
     - [x] JWT implementation
     - [x] Rate limiting
     - [x] Email service integration
@@ -31,6 +31,10 @@ Start Date: 2024-12-30
     - [x] Login with JWT
     - [x] Protected routes
     - [x] Refresh token flow
+  - [ ] Additional Authentication Features
+    - [ ] Password reset functionality
+    - [ ] Resend verification email
+    - [ ] Account locking after failed attempts
   - [x] User Roles System
     - [x] Multiple roles per user
     - [x] Role-based registration
@@ -52,10 +56,12 @@ Start Date: 2024-12-30
 - [x] API documentation setup
 
 ### Next Steps
-1. Begin Design System implementation (RFC-006)
-2. Implement additional security features (2FA, IP-based rate limiting)
-3. Complete environment configuration
-4. Begin Profile System implementation (Phase 1B)
+1. Implement password reset functionality
+2. Add resend verification email feature
+3. Begin Design System implementation (RFC-006)
+4. Implement additional security features (2FA, IP-based rate limiting)
+5. Complete environment configuration
+6. Begin Profile System implementation (Phase 1B)
 
 ## Upcoming Phases
 - Phase 1B: Profile System (Not Started)
@@ -63,6 +69,7 @@ Start Date: 2024-12-30
 - Phase 1D: UI/UX (Not Started)
 
 ## Recent Updates
+- 2024-01-02: Added email service tests and error handling
 - 2024-01-01: Implemented email verification flow with server components
 - 2024-12-31: Implemented flexible user roles system (RFC-007)
 - 2024-12-31: Completed Next-Auth integration with custom provider
@@ -95,9 +102,9 @@ None
    - Current Phase: 1A (Foundation)
    
 2. RFC-002: Authentication System
-   - Status: Implemented and Tested
+   - Status: Partially Implemented
    - Dependencies: None
-   - Next Steps: Email service integration
+   - Next Steps: Implement password reset and resend verification email
    
 3. RFC-003: Next-Auth Integration
    - Status: Implemented

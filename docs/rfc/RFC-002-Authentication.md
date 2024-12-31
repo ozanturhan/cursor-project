@@ -25,6 +25,7 @@ The platform requires a secure and robust authentication system to manage user a
    - User receives verification email with token
    - Token is valid for 24 hours
    - Email must be verified before login is allowed
+   - User can request resend of verification email (not implemented yet)
 
 3. Login
    - User submits credentials
@@ -39,7 +40,7 @@ The platform requires a secure and robust authentication system to manage user a
    - New access and refresh tokens are generated
    - Session is updated with new refresh token
 
-5. Password Reset
+5. Password Reset (not implemented yet)
    - User requests password reset
    - System sends reset token (valid for 1 hour)
    - User submits new password with token
@@ -52,11 +53,11 @@ The platform requires a secure and robust authentication system to manage user a
   - Refresh tokens: 7 days
   - Email verification: 24 hours
   - Password reset: 1 hour
-- Password hashing using Argon2
+- Password hashing using bcrypt
 - JWT with unique timestamps for token generation
 - Session tracking for refresh tokens
 - Email verification requirement
-- Account locking after failed attempts
+- Account locking after failed attempts (not implemented yet)
 
 ### Test Coverage
 #### Unit Tests
@@ -131,6 +132,8 @@ interface TokenPayload {
 - [x] Unit tests
 - [x] E2E tests
 - [x] Email service integration
+- [ ] Password reset functionality
+- [ ] Resend verification email
 - [ ] Additional security features
 
 ## Implementation Status
@@ -147,6 +150,7 @@ interface TokenPayload {
    - [x] Frontend verification flow
    - [x] Server component implementation
    - [x] User feedback system
+   - [ ] Resend verification email
 
 3. Security Features
    - [x] Password hashing
@@ -154,12 +158,19 @@ interface TokenPayload {
    - [x] Rate limiting
    - [x] Session tracking
    - [x] Email verification requirement
+   - [ ] Account locking after failed attempts
 
 ### Pending Features
-1. Additional Security
-   - [ ] 2FA implementation
-   - [ ] IP-based rate limiting
+1. Password Management
+   - [ ] Password reset flow
+   - [ ] Password reset email templates
+   - [ ] Frontend reset password page
+   - [ ] Session invalidation after reset
+
+2. Additional Security
    - [ ] Account locking after failed attempts
+   - [ ] IP-based rate limiting
+   - [ ] Resend verification email functionality
 
 ## References
 - [NestJS Authentication](https://docs.nestjs.com/security/authentication)
