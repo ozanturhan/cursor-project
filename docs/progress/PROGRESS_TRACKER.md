@@ -53,9 +53,9 @@ Start Date: 2024-12-30
 
 ### Next Steps
 1. Begin Design System implementation (RFC-006)
-2. Begin Next-Auth implementation (RFC-003)
-3. Implement email service integration
-4. Complete environment configuration
+2. Implement additional security features (2FA, IP-based rate limiting)
+3. Complete environment configuration
+4. Begin Profile System implementation (Phase 1B)
 
 ## Upcoming Phases
 - Phase 1B: Profile System (Not Started)
