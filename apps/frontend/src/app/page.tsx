@@ -32,51 +32,67 @@ export default async function MainPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Welcome, {userData.email}</h1>
-        
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Your Roles</h2>
-          <div className="space-y-2">
-            {userData.roles.map((role: any) => (
-              <div key={role.id} className="flex items-center space-x-2">
-                <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
-                  {role.role}
-                </span>
+    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+                Welcome back!
+              </h1>
+              <p className="text-lg text-neutral-600">
+                {userData.email}
+              </p>
+            </div>
+
+            <div className="mb-12">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-4">Your Active Roles</h2>
+              <div className="flex flex-wrap gap-2">
+                {userData.roles.map((role: any) => (
+                  <div
+                    key={role.id}
+                    className="px-4 py-2 bg-primary-50 border border-primary-200 text-primary-700 rounded-lg font-medium"
+                  >
+                    {role.role}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {userData.roles.some((r: any) => r.role === 'CLIENT') && (
+                <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-200 hover:border-primary-300 transition-colors">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-neutral-900 mb-2">Client Portal</h2>
+                    <p className="text-neutral-600">
+                      Schedule and manage your consultations with professionals
+                    </p>
+                  </div>
+                  <Link href="/client/dashboard" className="block">
+                    <Button variant="primary" fullWidth>
+                      Access Client Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {userData.roles.some((r: any) => r.role === 'PROFESSIONAL') && (
+                <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-200 hover:border-primary-300 transition-colors">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-neutral-900 mb-2">Professional Portal</h2>
+                    <p className="text-neutral-600">
+                      Manage your services, availability, and client appointments
+                    </p>
+                  </div>
+                  <Link href="/professional/dashboard" className="block">
+                    <Button variant="primary" fullWidth>
+                      Access Professional Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {userData.roles.some((r: any) => r.role === 'CLIENT') && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Client Dashboard</h2>
-              <p className="text-neutral-600 mb-4">
-                Book consultations and manage your appointments
-              </p>
-              <Link href="/client/dashboard">
-                <Button variant="primary">
-                  Go to Client Dashboard
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          {userData.roles.some((r: any) => r.role === 'PROFESSIONAL') && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Professional Dashboard</h2>
-              <p className="text-neutral-600 mb-4">
-                Manage your services and availability
-              </p>
-              <Link href="/professional/dashboard">
-                <Button variant="primary">
-                  Go to Professional Dashboard
-                </Button>
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </div>
