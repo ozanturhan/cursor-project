@@ -39,7 +39,7 @@ export function LoginForm() {
         return;
       }
 
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       setError('Something went wrong. Please try again.');
     } finally {

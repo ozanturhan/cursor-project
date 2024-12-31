@@ -3,6 +3,7 @@ import type { NextAuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { authApi } from '@/api/auth';
+import { log } from 'console';
 
 interface Credentials {
   email: string;
@@ -55,6 +56,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }: { token: JWT; user: any; account: any }) {
       // Initial sign in
       if (account && user) {
+        console.log('initial sign in: user', user);
         return {
           ...token,
           accessToken: user.accessToken,
@@ -64,6 +66,8 @@ export const authOptions: NextAuthOptions = {
         };
       }
 
+
+      console.log('token', token);
       // Return token if it's still valid
       if (Date.now() < token.accessTokenExpires) {
         return token;
@@ -71,6 +75,7 @@ export const authOptions: NextAuthOptions = {
 
       // Refresh token
       try {
+        console.log('refreshing token');
         const auth = await authApi.refreshToken(token.refreshToken);
 
         return {
