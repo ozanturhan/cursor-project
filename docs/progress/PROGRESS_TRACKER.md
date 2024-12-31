@@ -174,6 +174,7 @@ None
 - 🟡 RFC-008: Social Authentication (Planned)
 - ✅ RFC-009: Auth Status Pages
 - 🟡 RFC-010: User Profiles (Backend Complete)
+- 🟡 RFC-013: Profile Username (Proposed)
 
 ## Current Status
 
@@ -209,14 +210,19 @@ None
 - Updated landing page design
 
 ## Next Steps
-1. Begin frontend implementation for User Profiles (RFC-010)
+1. Review and implement RFC-013 (Profile Username)
+   - Update database schema
+   - Add username validation
+   - Modify profile endpoints
+   - Update frontend routes
+2. Begin frontend implementation for User Profiles (RFC-010)
    - Create profile management pages
    - Implement profile editing forms
    - Add social links management UI
    - Build availability calendar component
-2. Complete password reset functionality
-3. Implement social authentication
-4. Add frontend availability management
+3. Complete password reset functionality
+4. Implement social authentication
+5. Add frontend availability management
 
 ## Blockers
 None currently

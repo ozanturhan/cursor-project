@@ -102,7 +102,7 @@ model Availability {
 ### Frontend Routes
 - `/profile` - Current user's profile management
 - `/profile/edit` - Edit profile form
-- `/profile/:userId` - Public profile view
+- `/profile/:username` - Public profile view (changed from userId, see RFC-013)
 - `/profile/availability` - Availability management for professionals
 
 ### Implementation Phases
@@ -160,4 +160,5 @@ model Availability {
 ## References
 - [Next.js App Router Documentation](https://nextjs.org/docs/app)
 - [Prisma Relations](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
-- [Date-fns Timezone](https://date-fns.org/docs/Time-Zones) 
+- [Date-fns Timezone](https://date-fns.org/docs/Time-Zones)
+- [RFC-013: Profile Username](./RFC-013-Profile-Username.md) - Username implementation details 
