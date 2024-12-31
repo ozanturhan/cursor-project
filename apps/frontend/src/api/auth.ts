@@ -15,14 +15,14 @@ interface LoginData {
 
 export const authApi = {
   register: async (data: RegisterData): Promise<AuthResponse> => {
-    return api.post('/auth/register', data);
+    return api.post('/auth/register', data).then((response) => response.data);
   },
 
   login: async (data: LoginData): Promise<AuthResponse> => {
-    return api.post('/auth/login', data);
+    return api.post('/auth/login', data).then((response) => response.data);
   },
 
   refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
-    return api.post('/auth/refresh', { refreshToken });
+    return api.post('/auth/refresh', { refreshToken }).then((response) => response.data);
   },
 }; 

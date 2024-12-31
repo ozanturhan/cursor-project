@@ -38,7 +38,11 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        if (result.error === 'unverified') {
+          setError('Please verify your email before logging in. Check your inbox for the verification link.');
+        } else {
+          setError('Invalid email or password');
+        }
         return;
       }
 
@@ -107,7 +111,7 @@ export default function LoginPage() {
             variant="primary"
             size="lg"
             isLoading={isLoading}
-            className="w-full"
+            fullWidth
           >
             Sign in
           </Button>

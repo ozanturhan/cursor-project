@@ -31,10 +31,16 @@ export const authOptions: NextAuthOptions = {
             id: auth.user.id,
             email: auth.user.email,
             name: auth.user.fullName,
+            roles: auth.user.roles,
             accessToken: auth.accessToken,
-            refreshToken: auth.refreshToken
+            refreshToken: auth.refreshToken,
+            image: auth.user.image || null
           };
-        } catch (error) {
+        } catch (error: any) {
+          if (error.response?.data?.message === 'Please verify your email first') {
+            throw new Error('unverified');
+          }
+          console.error('Auth error:', error);
           return null;
         }
       }
@@ -54,6 +60,7 @@ export const authOptions: NextAuthOptions = {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
           accessTokenExpires: Date.now() + 15 * 60 * 1000, // 15 minutes
+          roles: user.roles
         };
       }
 
@@ -71,6 +78,7 @@ export const authOptions: NextAuthOptions = {
           accessToken: auth.accessToken,
           refreshToken: auth.refreshToken,
           accessTokenExpires: Date.now() + 15 * 60 * 1000,
+          roles: auth.user.roles
         };
       } catch {
         return { ...token, error: 'RefreshTokenError' };
@@ -84,7 +92,8 @@ export const authOptions: NextAuthOptions = {
         error: token.error,
         user: {
           ...session.user,
-          id: token.sub
+          id: token.sub,
+          roles: token.roles
         }
       };
     }
