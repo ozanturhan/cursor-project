@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
-import { api } from '@/lib/axios';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { FormControl } from '@/components/ui/FormControl';
+import axios from 'axios';
 
 interface RegisterData {
   email: string;
@@ -20,7 +20,7 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: RegisterData) => api.post('/auth/register', data),
+    mutationFn: (data: RegisterData) => axios.post('/api/auth/register', data),
     onSuccess: () => {
       router.push('/auth/login?message=Registration successful! Please check your email to verify your account.');
     },
