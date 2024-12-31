@@ -8,16 +8,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { FormControl } from '@/components/ui/FormControl';
 
-interface LoginFormProps {
-  initialMessage?: string;
-  initialError?: string;
-}
-
-export function LoginForm({ initialMessage, initialError }: LoginFormProps) {
+export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(initialError || null);
-  const [message, setMessage] = useState<string | null>(initialMessage || null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,14 +32,13 @@ export function LoginForm({ initialMessage, initialError }: LoginFormProps) {
 
       if (result?.error) {
         if (result.error === 'unverified') {
-          setError('Please verify your email before logging in. Check your inbox for the verification link.');
+          router.push('/auth/error/verification-required');
         } else {
           setError('Invalid email or password');
         }
         return;
       }
 
-      // Redirect to the intended page or dashboard
       router.push('/dashboard');
     } catch (error) {
       setError('Something went wrong. Please try again.');
@@ -61,12 +54,6 @@ export function LoginForm({ initialMessage, initialError }: LoginFormProps) {
           <h1 className="text-2xl font-bold text-neutral-900">Welcome back</h1>
           <p className="mt-2 text-neutral-600">Sign in to your account</p>
         </div>
-
-        {message && (
-          <div className="p-3 text-sm text-primary-500 bg-primary-50 rounded-md">
-            {message}
-          </div>
-        )}
 
         {error && (
           <div className="p-3 text-sm text-error-500 bg-error-50 rounded-md">
