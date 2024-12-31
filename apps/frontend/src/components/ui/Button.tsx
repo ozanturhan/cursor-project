@@ -7,50 +7,64 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500',
-        secondary: 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 focus:ring-neutral-500',
-        outline: 'border border-neutral-300 bg-transparent hover:bg-neutral-100 focus:ring-neutral-500',
-        ghost: 'bg-transparent hover:bg-neutral-100 focus:ring-neutral-500',
+        secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus:ring-neutral-500',
+        outline: 'border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
+        ghost: 'text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
       },
       size: {
         sm: 'h-8 px-2 text-sm',
         md: 'h-10 px-4 text-base',
         lg: 'h-12 px-6 text-lg',
       },
+      fullWidth: {
+        true: 'w-full',
+        false: 'w-auto',
+      },
       isDisabled: {
         true: 'opacity-50 cursor-not-allowed pointer-events-none',
+        false: '',
       },
       isLoading: {
         true: 'opacity-50 cursor-wait pointer-events-none',
+        false: '',
       },
     },
     defaultVariants: {
       variant: 'primary',
       size: 'md',
+      fullWidth: false,
+      isDisabled: false,
+      isLoading: false,
     },
   }
 );
 
 export interface ButtonProps 
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>, 
-  VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   children: React.ReactNode;
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  fullWidth?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   variant,
   size,
-  isDisabled,
-  isLoading,
+  fullWidth,
+  isDisabled = false,
+  isLoading = false,
   leftIcon,
   rightIcon,
   children,
+  className,
   ...props
 }) => {
   return (
     <button
-      className={buttonVariants({ variant, size, isDisabled, isLoading })}
+      className={buttonVariants({ variant, size, fullWidth, isDisabled: !!isDisabled, isLoading: !!isLoading })}
       disabled={isDisabled || isLoading}
       {...props}
     >

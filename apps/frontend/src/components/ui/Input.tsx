@@ -2,7 +2,7 @@ import React from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 
 const inputVariants = cva(
-  'w-full rounded-md border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+  'w-full rounded-md border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 text-neutral-900 placeholder:text-neutral-500',
   {
     variants: {
       size: {
@@ -16,21 +16,24 @@ const inputVariants = cva(
       },
       isDisabled: {
         true: 'opacity-50 cursor-not-allowed bg-neutral-100',
+        false: '',
       },
     },
     defaultVariants: {
       size: 'md',
       variant: 'default',
+      isDisabled: false,
     },
   }
 );
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>,
     VariantProps<typeof inputVariants> {
   label?: string;
   error?: string;
   helperText?: string;
+  isDisabled?: boolean;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(

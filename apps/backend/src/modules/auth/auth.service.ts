@@ -1,103 +1,81 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import * as argon2 from 'argon2';
-import { randomBytes } from 'crypto';
 import { RegisterDto, LoginDto, AuthResponse } from './dto/auth.dto';
-import { UserType } from '@prisma/client';
+import { Prisma, User, Role } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<void> {
-    // Check if user exists
+  async register(data: RegisterDto): Promise<User & { roles: any[] }> {
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: data.email },
     });
 
     if (existingUser) {
-      throw new BadRequestException('Email already registered');
+      throw new ConflictException('Email already registered');
     }
 
-    // Hash password
-    const hashedPassword = await argon2.hash(dto.password);
-
-    // Generate email verification token
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     const verificationToken = randomBytes(32).toString('hex');
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Create user
     const user = await this.prisma.user.create({
       data: {
-        email: dto.email,
+        email: data.email,
         passwordHash: hashedPassword,
-        fullName: dto.fullName,
-        userType: dto.userType,
+        fullName: data.fullName,
         emailVerificationToken: verificationToken,
         emailVerificationExpires: verificationExpires,
-        profile: dto.userType === UserType.PROFESSIONAL ? {
+        roles: {
           create: {
-            profession: dto.profession || '',
+            role: Role.CLIENT,
           },
-        } : undefined,
+        },
+      },
+      include: {
+        roles: true,
       },
     });
 
     // TODO: Send verification email
-    await this.sendVerificationEmail(user.email, verificationToken);
+    console.log(`Verification token: ${verificationToken}`);
+
+    return user;
   }
 
-  async login(dto: LoginDto): Promise<AuthResponse> {
-    // Find user
+  async login(data: LoginDto): Promise<AuthResponse> {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: data.email },
+      include: {
+        roles: true,
+      },
     });
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user?.passwordHash) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Check if email is verified
-    if (!user.emailVerified) {
-      throw new UnauthorizedException('Please verify your email before logging in');
-    }
-
-    // Verify password
-    const isPasswordValid = await argon2.verify(user.passwordHash, dto.password);
-
+    const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate tokens
+    if (!user.emailVerified) {
+      throw new UnauthorizedException('Please verify your email first');
+    }
+
     const tokens = await this.generateTokens(user);
-
-    // Create session
-    await this.prisma.session.create({
-      data: {
-        userId: user.id,
-        token: tokens.refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      },
-    });
-
     return {
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        userType: user.userType,
-      },
+      user,
       ...tokens,
     };
   }
@@ -109,7 +87,7 @@ export class AuthService {
         emailVerificationExpires: {
           gt: new Date(),
         },
-        emailVerified: null, // Only verify if not already verified
+        emailVerified: null,
       },
     });
 
@@ -117,18 +95,14 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
-    try {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          emailVerified: new Date(),
-          emailVerificationToken: null,
-          emailVerificationExpires: null,
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException('Failed to verify email. Please try again.');
-    }
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: new Date(),
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+      },
+    });
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -153,7 +127,7 @@ export class AuthService {
     });
 
     // TODO: Send password reset email
-    await this.sendPasswordResetEmail(email, resetToken);
+    console.log(`Reset token: ${resetToken}`);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
@@ -170,7 +144,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
-    const hashedPassword = await argon2.hash(newPassword);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -180,58 +154,28 @@ export class AuthService {
         passwordResetExpires: null,
       },
     });
-
-    // Invalidate all sessions
-    await this.prisma.session.deleteMany({
-      where: { userId: user.id },
-    });
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
     try {
-      // Verify the refresh token
-      const payload = await this.jwtService.verifyAsync(refreshToken);
-      
-      if (payload.type !== 'refresh') {
-        throw new UnauthorizedException('Invalid token type');
-      }
+      const payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
 
-      // Check if the token exists in the session
-      const session = await this.prisma.session.findFirst({
-        where: {
-          token: refreshToken,
-          expiresAt: {
-            gt: new Date(),
-          },
-        },
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
         include: {
-          user: true,
+          roles: true,
         },
       });
 
-      if (!session) {
+      if (!user) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      // Generate new tokens
-      const tokens = await this.generateTokens(session.user);
-
-      // Update session with new refresh token
-      await this.prisma.session.update({
-        where: { id: session.id },
-        data: {
-          token: tokens.refreshToken,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-        },
-      });
-
+      const tokens = await this.generateTokens(user);
       return {
-        user: {
-          id: session.user.id,
-          email: session.user.email,
-          fullName: session.user.fullName,
-          userType: session.user.userType,
-        },
+        user,
         ...tokens,
       };
     } catch (error) {
@@ -239,42 +183,29 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(user: { id: string; email: string }) {
+  private async generateTokens(user: User) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
-        {
-          sub: user.id,
+        { 
+          sub: user.id, 
           email: user.email,
-          type: 'access',
-          iat: Date.now(),
+          jti: randomBytes(16).toString('hex')
         },
-        {
-          expiresIn: '15m',
-        },
+        { expiresIn: '15m' },
       ),
       this.jwtService.signAsync(
-        {
-          sub: user.id,
+        { 
+          sub: user.id, 
           email: user.email,
-          type: 'refresh',
-          iat: Date.now(),
+          jti: randomBytes(16).toString('hex')
         },
-        {
-          expiresIn: '7d',
-        },
+        { expiresIn: '7d' },
       ),
     ]);
 
-    return { accessToken, refreshToken };
-  }
-
-  private async sendVerificationEmail(email: string, token: string): Promise<void> {
-    // TODO: Implement email sending
-    console.log(`Verification email to ${email} with token ${token}`);
-  }
-
-  private async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    // TODO: Implement email sending
-    console.log(`Password reset email to ${email} with token ${token}`);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 } 

@@ -15,6 +15,24 @@
         ]
       }
     },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the current user profile"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Get current user profile",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
@@ -34,7 +52,10 @@
             "description": "User successfully registered"
           },
           "400": {
-            "description": "Bad request - validation error or email already exists"
+            "description": "Bad request - validation error"
+          },
+          "409": {
+            "description": "Email already exists"
           }
         },
         "summary": "Register a new user",
@@ -63,13 +84,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - invalid credentials or unverified email"
+            "description": "Invalid credentials"
           }
         },
         "summary": "Login user",
@@ -188,7 +209,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -198,29 +219,6 @@
           }
         },
         "summary": "Refresh access token",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/me": {
-      "get": {
-        "operationId": "AuthController_getCurrentUser",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Current user profile"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get current user profile",
         "tags": [
           "auth"
         ]
@@ -281,25 +279,12 @@
           "fullName": {
             "type": "string",
             "example": "John Doe"
-          },
-          "userType": {
-            "type": "string",
-            "enum": [
-              "CLIENT",
-              "PROFESSIONAL"
-            ],
-            "example": "CLIENT"
-          },
-          "profession": {
-            "type": "string",
-            "example": "Doctor"
           }
         },
         "required": [
           "email",
           "password",
-          "fullName",
-          "userType"
+          "fullName"
         ]
       },
       "LoginDto": {
@@ -319,25 +304,57 @@
           "password"
         ]
       },
-      "AuthResponse": {
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "roles": {
+            "example": [
+              {
+                "id": "123",
+                "userId": "123",
+                "role": "CLIENT",
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "updatedAt": "2024-01-01T00:00:00.000Z"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "fullName",
+          "roles"
+        ]
+      },
+      "AuthResponseDto": {
         "type": "object",
         "properties": {
           "user": {
-            "type": "object",
-            "example": {
-              "id": "123",
-              "email": "user@example.com",
-              "fullName": "John Doe",
-              "userType": "CLIENT"
-            }
+            "$ref": "#/components/schemas/UserResponseDto"
           },
           "accessToken": {
             "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIs..."
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           },
           "refreshToken": {
             "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIs..."
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
         "required": [
@@ -377,15 +394,10 @@
             "type": "string",
             "example": "newpassword123",
             "minLength": 8
-          },
-          "token": {
-            "type": "string",
-            "example": "reset-token-123"
           }
         },
         "required": [
-          "password",
-          "token"
+          "password"
         ]
       },
       "RefreshTokenDto": {
@@ -393,7 +405,7 @@
         "properties": {
           "refreshToken": {
             "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIs..."
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
         "required": [

@@ -7,13 +7,13 @@ import { PrismaService } from '../../../prisma/prisma.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
+    private configService: ConfigService,
+    private prisma: PrismaService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get<string>('JWT_SECRET'),
       ignoreExpiration: false,
+      secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 
@@ -23,17 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       select: {
         id: true,
         email: true,
-        userType: true,
         emailVerified: true,
+        roles: true,
       },
     });
 
     if (!user) {
       throw new UnauthorizedException('User not found');
-    }
-
-    if (!user.emailVerified) {
-      throw new UnauthorizedException('Email not verified');
     }
 
     return user;

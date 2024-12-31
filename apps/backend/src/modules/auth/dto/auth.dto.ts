@@ -1,6 +1,6 @@
-import { IsEmail, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
-import { UserType } from '@prisma/client';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -15,15 +15,6 @@ export class RegisterDto {
   @ApiProperty({ example: 'John Doe' })
   @IsString()
   fullName!: string;
-
-  @ApiProperty({ enum: UserType, example: UserType.CLIENT })
-  @IsEnum(UserType)
-  userType!: UserType;
-
-  @ApiPropertyOptional({ example: 'Doctor' })
-  @IsString()
-  @IsOptional()
-  profession?: string;
 }
 
 export class LoginDto {
@@ -36,27 +27,10 @@ export class LoginDto {
   password!: string;
 }
 
-export class AuthResponse {
-  @ApiProperty({
-    example: {
-      id: '123',
-      email: 'user@example.com',
-      fullName: 'John Doe',
-      userType: UserType.CLIENT
-    }
-  })
-  user!: {
-    id: string;
-    email: string;
-    fullName: string;
-    userType: UserType;
-  };
-
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIs...' })
-  accessToken!: string;
-
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIs...' })
-  refreshToken!: string;
+export class VerifyEmailDto {
+  @ApiProperty({ example: 'verification-token-123' })
+  @IsString()
+  token!: string;
 }
 
 export class ForgotPasswordDto {
@@ -70,20 +44,63 @@ export class ResetPasswordDto {
   @IsString()
   @MinLength(8)
   password!: string;
-
-  @ApiProperty({ example: 'reset-token-123' })
-  @IsString()
-  token!: string;
-}
-
-export class VerifyEmailDto {
-  @ApiProperty({ example: 'verification-token-123' })
-  @IsString()
-  token!: string;
 }
 
 export class RefreshTokenDto {
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIs...' })
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
   @IsString()
   refreshToken!: string;
+}
+
+export class UserResponseDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  id!: string;
+
+  @ApiProperty({ example: 'user@example.com' })
+  email!: string;
+
+  @ApiProperty({ example: 'John Doe' })
+  fullName!: string;
+
+  @ApiProperty({
+    example: [{
+      id: '123',
+      userId: '123',
+      role: 'CLIENT',
+      createdAt: '2024-01-01T00:00:00.000Z',
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    }]
+  })
+  roles!: {
+    id: string;
+    userId: string;
+    role: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+}
+
+export class AuthResponseDto {
+  @ApiProperty()
+  user!: UserResponseDto;
+
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+  accessToken!: string;
+
+  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+  refreshToken!: string;
+}
+
+export interface AuthResponse {
+  user: User & {
+    roles: {
+      id: string;
+      userId: string;
+      role: 'CLIENT' | 'PROFESSIONAL';
+      createdAt: Date;
+      updatedAt: Date;
+    }[];
+  };
+  accessToken: string;
+  refreshToken: string;
 } 

@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { UserType } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -20,11 +20,14 @@ describe('AuthController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.session.deleteMany();
-    await prisma.availability.deleteMany();
-    await prisma.profile.deleteMany();
+    await prisma.userRole.deleteMany();
     await prisma.user.deleteMany();
     await app.close();
+  });
+
+  beforeAll(async () => {
+    await prisma.userRole.deleteMany();
+    await prisma.user.deleteMany();
   });
 
   describe('Authentication Flow', () => {
@@ -32,7 +35,6 @@ describe('AuthController (e2e)', () => {
       email: 'test@example.com',
       password: 'password123',
       fullName: 'Test User',
-      userType: UserType.CLIENT,
     };
 
     let verificationToken: string;
@@ -41,15 +43,12 @@ describe('AuthController (e2e)', () => {
 
     // Clean up before starting the test suite
     beforeAll(async () => {
-      await prisma.session.deleteMany();
-      await prisma.availability.deleteMany();
-      await prisma.profile.deleteMany();
       await prisma.user.deleteMany();
     });
 
     it('should register a new user and not allow login before verification', async () => {
       // Register user
-      await request(app.getHttpServer())
+      const registerResponse = await request(app.getHttpServer())
         .post('/auth/register')
         .send(testUser)
         .expect(201);
@@ -57,11 +56,14 @@ describe('AuthController (e2e)', () => {
       // Get user and verification token
       const user = await prisma.user.findUnique({
         where: { email: testUser.email },
+        include: { roles: true },
       });
 
       expect(user).toBeDefined();
       expect(user?.emailVerified).toBeNull();
       expect(user?.emailVerificationToken).toBeDefined();
+      expect(user?.roles).toHaveLength(1);
+      expect(user?.roles[0].role).toBe(Role.CLIENT);
       verificationToken = user!.emailVerificationToken!;
 
       // Try to login before verification
@@ -73,7 +75,7 @@ describe('AuthController (e2e)', () => {
         })
         .expect(401)
         .expect((res) => {
-          expect(res.body.message).toBe('Please verify your email before logging in');
+          expect(res.body.message).toBe('Please verify your email first');
         });
     });
 
@@ -87,11 +89,14 @@ describe('AuthController (e2e)', () => {
       // Check if user is verified
       const verifiedUser = await prisma.user.findUnique({
         where: { email: testUser.email },
+        include: { roles: true },
       });
 
       expect(verifiedUser).toBeDefined();
       expect(verifiedUser?.emailVerified).toBeDefined();
       expect(verifiedUser?.emailVerificationToken).toBeNull();
+      expect(verifiedUser?.roles).toHaveLength(1);
+      expect(verifiedUser?.roles[0].role).toBe(Role.CLIENT);
 
       // Login after verification
       const loginResponse = await request(app.getHttpServer())
@@ -105,6 +110,8 @@ describe('AuthController (e2e)', () => {
       expect(loginResponse.body).toHaveProperty('accessToken');
       expect(loginResponse.body).toHaveProperty('refreshToken');
       expect(loginResponse.body.user).toHaveProperty('email', testUser.email);
+      expect(loginResponse.body.user.roles).toHaveLength(1);
+      expect(loginResponse.body.user.roles[0].role).toBe(Role.CLIENT);
 
       accessToken = loginResponse.body.accessToken;
       refreshToken = loginResponse.body.refreshToken;
@@ -117,6 +124,8 @@ describe('AuthController (e2e)', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('email', testUser.email);
+      expect(response.body.roles).toHaveLength(1);
+      expect(response.body.roles[0].role).toBe(Role.CLIENT);
     });
 
     it('should refresh tokens', async () => {
@@ -129,6 +138,8 @@ describe('AuthController (e2e)', () => {
       expect(response.body).toHaveProperty('refreshToken');
       expect(response.body.accessToken).not.toBe(accessToken);
       expect(response.body.refreshToken).not.toBe(refreshToken);
+      expect(response.body.user.roles).toHaveLength(1);
+      expect(response.body.user.roles[0].role).toBe(Role.CLIENT);
 
       // Update tokens for subsequent tests
       accessToken = response.body.accessToken;
@@ -167,13 +178,16 @@ describe('AuthController (e2e)', () => {
         .expect(401);
 
       // New password should work
-      await request(app.getHttpServer())
+      const loginResponse = await request(app.getHttpServer())
         .post('/auth/login')
         .send({
           email: testUser.email,
           password: newPassword,
         })
         .expect(201);
+
+      expect(loginResponse.body.user.roles).toHaveLength(1);
+      expect(loginResponse.body.user.roles[0].role).toBe(Role.CLIENT);
     });
   });
 }); 

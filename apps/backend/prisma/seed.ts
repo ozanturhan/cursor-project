@@ -1,49 +1,48 @@
-import { PrismaClient, UserType, BookingStatus } from '@prisma/client';
+import { PrismaClient, Role, BookingStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Clean up existing data
-  await prisma.booking.deleteMany();
   await prisma.availability.deleteMany();
   await prisma.profile.deleteMany();
-  await prisma.session.deleteMany();
+  await prisma.userRole.deleteMany();
   await prisma.user.deleteMany();
 
-  // Create test password hash
-  const testPassword = await bcrypt.hash('test123', 10);
-
-  // Create professionals
-  const therapist = await prisma.user.create({
+  // Create professional users
+  const professional1 = await prisma.user.create({
     data: {
-      email: 'therapist@example.com',
-      passwordHash: testPassword,
-      fullName: 'Dr. Jane Smith',
-      userType: UserType.PROFESSIONAL,
+      email: 'john.doe@example.com',
+      passwordHash: await bcrypt.hash('password123', 10),
+      fullName: 'John Doe',
       emailVerified: new Date(),
       emailVerificationToken: null,
       emailVerificationExpires: null,
       passwordResetToken: null,
       passwordResetExpires: null,
-      profile: {
+      roles: {
+        create: [
+          { role: Role.PROFESSIONAL },
+          { role: Role.CLIENT }
+        ]
+      },
+      profiles: {
         create: {
-          profession: 'Therapist',
-          bio: 'Licensed therapist with 10 years of experience in cognitive behavioral therapy.',
-          hourlyRate: 120.00,
-          availability: {
+          profession: 'Senior Software Engineer',
+          bio: 'Experienced software engineer with 10+ years in web development',
+          hourlyRate: 150,
+          availabilities: {
             create: [
-              // Monday availability
               {
-                dayOfWeek: 1,
+                dayOfWeek: 1, // Monday
                 startHour: 9,
                 startMinute: 0,
                 endHour: 17,
                 endMinute: 0,
               },
-              // Wednesday availability
               {
-                dayOfWeek: 3,
+                dayOfWeek: 2, // Tuesday
                 startHour: 9,
                 startMinute: 0,
                 endHour: 17,
@@ -55,119 +54,114 @@ async function main() {
       },
     },
     include: {
-      profile: true,
-    },
-  });
-
-  const coach = await prisma.user.create({
-    data: {
-      email: 'coach@example.com',
-      passwordHash: testPassword,
-      fullName: 'John Coach',
-      userType: UserType.PROFESSIONAL,
-      emailVerified: new Date(),
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-      passwordResetToken: null,
-      passwordResetExpires: null,
-      profile: {
-        create: {
-          profession: 'Career Coach',
-          bio: 'Certified career coach specializing in tech industry transitions.',
-          hourlyRate: 90.00,
-          availability: {
-            create: {
-              dayOfWeek: 2,
-              startHour: 10,
-              startMinute: 0,
-              endHour: 18,
-              endMinute: 0,
-            },
-          },
+      roles: true,
+      profiles: {
+        include: {
+          availabilities: true,
         },
       },
     },
   });
 
-  // Create clients
-  const client1 = await prisma.user.create({
+  const professional2 = await prisma.user.create({
     data: {
-      email: 'client1@example.com',
-      passwordHash: testPassword,
-      fullName: 'Alice Johnson',
-      userType: UserType.CLIENT,
+      email: 'jane.smith@example.com',
+      passwordHash: await bcrypt.hash('password123', 10),
+      fullName: 'Jane Smith',
       emailVerified: new Date(),
       emailVerificationToken: null,
       emailVerificationExpires: null,
       passwordResetToken: null,
       passwordResetExpires: null,
+      roles: {
+        create: [
+          { role: Role.PROFESSIONAL },
+          { role: Role.CLIENT }
+        ]
+      },
+      profiles: {
+        create: {
+          profession: 'Business Consultant',
+          bio: 'Strategic business consultant with expertise in growth and operations',
+          hourlyRate: 200,
+          availabilities: {
+            create: [
+              {
+                dayOfWeek: 3, // Wednesday
+                startHour: 10,
+                startMinute: 0,
+                endHour: 18,
+                endMinute: 0,
+              },
+              {
+                dayOfWeek: 4, // Thursday
+                startHour: 10,
+                startMinute: 0,
+                endHour: 18,
+                endMinute: 0,
+              },
+            ],
+          },
+        },
+      },
     },
+    include: {
+      roles: true,
+      profiles: {
+        include: {
+          availabilities: true,
+        },
+      },
+    },
+  });
+
+  // Create client users
+  const client1 = await prisma.user.create({
+    data: {
+      email: 'client1@example.com',
+      passwordHash: await bcrypt.hash('password123', 10),
+      fullName: 'Alice Johnson',
+      emailVerified: new Date(),
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      roles: {
+        create: { role: Role.CLIENT }
+      }
+    },
+    include: {
+      roles: true
+    }
   });
 
   const client2 = await prisma.user.create({
     data: {
       email: 'client2@example.com',
-      passwordHash: testPassword,
+      passwordHash: await bcrypt.hash('password123', 10),
       fullName: 'Bob Wilson',
-      userType: UserType.CLIENT,
       emailVerified: new Date(),
       emailVerificationToken: null,
       emailVerificationExpires: null,
       passwordResetToken: null,
       passwordResetExpires: null,
+      roles: {
+        create: { role: Role.CLIENT }
+      }
     },
+    include: {
+      roles: true
+    }
   });
 
-  // Create sample sessions for testing
-  await prisma.session.create({
-    data: {
-      userId: therapist.id,
-      token: 'sample-session-token-1',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-    },
-  });
-
-  await prisma.session.create({
-    data: {
-      userId: client1.id,
-      token: 'sample-session-token-2',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    },
-  });
-
-  // Create bookings
-  await prisma.booking.createMany({
-    data: [
-      {
-        clientId: client1.id,
-        professionalId: therapist.id,
-        startTime: new Date('2024-01-15T10:00:00Z'),
-        endTime: new Date('2024-01-15T11:00:00Z'),
-        status: BookingStatus.CONFIRMED,
-      },
-      {
-        clientId: client2.id,
-        professionalId: therapist.id,
-        startTime: new Date('2024-01-15T14:00:00Z'),
-        endTime: new Date('2024-01-15T15:00:00Z'),
-        status: BookingStatus.PENDING,
-      },
-      {
-        clientId: client1.id,
-        professionalId: coach.id,
-        startTime: new Date('2024-01-16T11:00:00Z'),
-        endTime: new Date('2024-01-16T12:00:00Z'),
-        status: BookingStatus.CONFIRMED,
-      },
-    ],
-  });
-
-  console.log('Seed data created successfully!');
+  console.log('Seed data created successfully');
+  console.log('Professional users:', { professional1, professional2 });
+  console.log('Client users:', { client1, client2 });
 }
 
 main()
   .catch((e) => {
-    console.error('Error seeding data:', e);
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

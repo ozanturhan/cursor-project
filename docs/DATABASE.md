@@ -96,6 +96,24 @@ Represents a consultation booking between a client and professional.
   - Many-to-one with User (client)
   - Many-to-one with User (professional)
 
+### UserRole
+- `id`: UUID (Primary Key)
+- `userId`: UUID (Foreign Key -> User)
+- `role`: Enum (CLIENT, PROFESSIONAL)
+- `createdAt`: DateTime
+- `updatedAt`: DateTime
+
+## Relationships
+- One User can have multiple UserRoles (One-to-Many)
+
+## Notes
+- Users can have multiple roles simultaneously (e.g., both CLIENT and PROFESSIONAL)
+- All users are initially assigned the CLIENT role upon registration
+- Additional roles can be assigned later through role management endpoints
+- Email verification is required before a user can log in
+- Password reset tokens expire after 1 hour
+- Email verification tokens expire after 24 hours
+
 ## Enums
 
 ### UserType
