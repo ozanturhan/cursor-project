@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Profile, SocialLink, Availability } from '@prisma/client';
 
@@ -42,6 +42,15 @@ export class ProfileService {
   }
 
   async updateSocialLink(id: string, data: Partial<SocialLink>) {
+    const socialLink = await this.prisma.socialLink.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!socialLink) {
+      throw new NotFoundException('Social link not found');
+    }
+
     return this.prisma.socialLink.update({
       where: { id },
       data,
@@ -49,12 +58,25 @@ export class ProfileService {
   }
 
   async deleteSocialLink(id: string) {
+    const socialLink = await this.prisma.socialLink.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!socialLink) {
+      throw new NotFoundException('Social link not found');
+    }
+
     return this.prisma.socialLink.delete({
       where: { id },
     });
   }
 
   async addAvailability(profileId: string, data: Omit<Availability, 'id' | 'profileId' | 'createdAt' | 'updatedAt'>) {
+    if (data.startHour >= data.endHour) {
+      throw new BadRequestException('End time must be after start time');
+    }
+
     return this.prisma.availability.create({
       data: {
         ...data,
@@ -64,6 +86,22 @@ export class ProfileService {
   }
 
   async updateAvailability(id: string, data: Partial<Availability>) {
+    const availability = await this.prisma.availability.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!availability) {
+      throw new NotFoundException('Availability slot not found');
+    }
+
+    const startHour = data.startHour ?? availability.startHour;
+    const endHour = data.endHour ?? availability.endHour;
+
+    if (startHour >= endHour) {
+      throw new BadRequestException('End time must be after start time');
+    }
+
     return this.prisma.availability.update({
       where: { id },
       data,
@@ -71,6 +109,15 @@ export class ProfileService {
   }
 
   async deleteAvailability(id: string) {
+    const availability = await this.prisma.availability.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!availability) {
+      throw new NotFoundException('Availability slot not found');
+    }
+
     return this.prisma.availability.delete({
       where: { id },
     });
