@@ -22,10 +22,10 @@ export function RegisterForm() {
   const { mutate, isPending } = useMutation({
     mutationFn: (data: RegisterData) => axios.post('/api/auth/register', data),
     onSuccess: () => {
-      router.push('/auth/login?message=Registration successful! Please check your email to verify your account.');
+      router.push('/auth/success/registration');
     },
     onError: (error: any) => {
-      setError(error.response?.data?.message || 'Something went wrong. Please try again.');
+      router.push('/auth/error/registration-failed');
     },
   });
 
