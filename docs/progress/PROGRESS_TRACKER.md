@@ -135,3 +135,40 @@ None
    - Status: Proposed
    - Dependencies: RFC-002, RFC-003
    - Next Steps: Review and acceptance 
+
+# Progress Tracker
+
+## RFCs
+- RFC-001: Project Structure ✅
+- RFC-002: Authentication System 🟡 (Partially Implemented)
+- RFC-003: API Design ✅
+- RFC-004: Database Schema ✅
+- RFC-005: Error Handling ✅
+- RFC-006: Design System ✅
+- RFC-007: Testing Strategy ✅
+- RFC-008: Social Authentication ⏳
+- RFC-009: Auth Status Pages 🆕
+
+## Recent Updates
+- Added email service tests and error handling
+- Implemented email verification flow
+- Added social authentication RFC
+- Added auth status pages RFC
+- Updated cursor rules for frontend development
+
+## Next Steps
+1. Implement auth status pages (RFC-009)
+2. Implement password reset functionality
+3. Implement resend verification email feature
+4. Implement social authentication (RFC-008)
+
+## Pending Features
+- Password reset
+- Resend verification email
+- Social authentication
+- Auth status pages
+
+## Notes
+- Email verification is now working but needs proper status pages
+- Need to improve error handling in auth flows
+- Consider adding support ticket creation for auth errors 
