@@ -34,7 +34,7 @@ export default async function MainPage() {
   return (
     <div className="min-h-screen bg-neutral-50 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Welcome, {userData.fullName}</h1>
+        <h1 className="text-2xl font-bold mb-4">Welcome, {userData.email}</h1>
         
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Your Roles</h2>
