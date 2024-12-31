@@ -4,11 +4,34 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   app.useGlobalPipes(new ValidationPipe());
+
+  // Get ConfigService to access environment variables
+  const configService = app.get(ConfigService);
+
+  // Log environment variables (DEVELOPMENT ONLY)
+  if (configService.get('NODE_ENV') === 'development') {
+    console.log('🔍 Environment Variables:');
+    const envVarsToLog = [
+      'EMAIL_HOST', 
+      'EMAIL_PORT', 
+      'EMAIL_SECURE', 
+      'EMAIL_FROM', 
+      'SUPPORT_EMAIL', 
+      'FRONTEND_URL', 
+      'NODE_ENV', 
+      'PORT'
+    ];
+
+    envVarsToLog.forEach(key => {
+      console.log(`${key}: ${configService.get(key) || 'Not set'}`);
+    });
+  }
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -37,7 +60,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  const port = process.env.PORT || 3001;
+  const port = configService.get('PORT', 3001);
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
   console.log(`Swagger UI is available at: http://localhost:${port}/api`);

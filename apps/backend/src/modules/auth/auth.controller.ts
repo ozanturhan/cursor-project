@@ -1,14 +1,22 @@
-import { Body, Controller, Post, Get, Query, UseGuards, Request } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, AuthResponseDto, VerifyEmailDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  private latestVerificationToken: string | null = null;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
@@ -74,5 +82,30 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  @Get('debug/latest-verification-token')
+  @ApiOperation({ summary: 'Get the latest verification token (DEVELOPMENT ONLY)' })
+  @ApiResponse({ status: 200, description: 'Returns the latest verification token' })
+  async getLatestVerificationToken() {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new HttpException('Endpoint only available in development', HttpStatus.FORBIDDEN);
+    }
+
+    const latestUser = await this.prismaService.user.findFirst({
+      where: { emailVerificationToken: { not: null } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!latestUser) {
+      throw new HttpException('No pending verification tokens found', HttpStatus.NOT_FOUND);
+    }
+
+    const verificationLink = `${this.configService.get('FRONTEND_URL')}/verify-email?token=${latestUser.emailVerificationToken}`;
+
+    return {
+      token: latestUser.emailVerificationToken,
+      verificationLink,
+    };
   }
 } 

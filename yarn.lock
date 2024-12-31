@@ -4495,6 +4495,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/handlebars@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@types/handlebars@npm:4.1.0"
+  dependencies:
+    handlebars: "npm:*"
+  checksum: 10/536d9f690c93f5d13fcc4a37ae7dd11f41eb73c47416d56f51623aedc3b573ad9775d6618ede75d7bf9148ac75694e50f8e6ba5773de7d9f040811368c73739f
+  languageName: node
+  linkType: hard
+
 "@types/html-minifier-terser@npm:^6.0.0":
   version: 6.1.0
   resolution: "@types/html-minifier-terser@npm:6.1.0"
@@ -4642,6 +4651,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10/9a1bcb2f25ce1ad249497e5f10ed984bf0ec476439fad2e965c3d6cc4642abb23c5e8400f7e48e55ff121d2b80b14bdc1bd4eac7ff6848154033a2be25fffb17
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^6.4.17":
+  version: 6.4.17
+  resolution: "@types/nodemailer@npm:6.4.17"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/bd090c9a81f15ee5e1e2123de1004593bacc24d385460dd56c51ec657d61dc1cfd4f44fc71baac060a1abcb487aef5027509e0afd646e7118d7a8a13a95bad9d
   languageName: node
   linkType: hard
 
@@ -6306,8 +6324,10 @@ __metadata:
     "@sendgrid/mail": "npm:^8.1.4"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/express": "npm:^5.0.0"
+    "@types/handlebars": "npm:^4.1.0"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.3.1"
+    "@types/nodemailer": "npm:^6.4.17"
     "@types/passport-jwt": "npm:^4.0.1"
     "@types/supertest": "npm:^6.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
@@ -6319,6 +6339,7 @@ __metadata:
     eslint: "npm:^8.0.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-prettier: "npm:^5.0.0"
+    handlebars: "npm:^4.7.8"
     jest: "npm:^29.7.0"
     nodemailer: "npm:^6.9.16"
     passport: "npm:^0.7.0"
@@ -9950,6 +9971,7 @@ __metadata:
     postcss: "npm:^8"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
+    sonner: "npm:^1.7.1"
     storybook: "npm:^8.4.7"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5"
@@ -10364,7 +10386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"handlebars@npm:^4.7.7":
+"handlebars@npm:*, handlebars@npm:^4.7.7, handlebars@npm:^4.7.8":
   version: 4.7.8
   resolution: "handlebars@npm:4.7.8"
   dependencies:
@@ -16360,6 +16382,16 @@ __metadata:
     ip-address: "npm:^9.0.5"
     smart-buffer: "npm:^4.2.0"
   checksum: 10/ffcb622c22481dfcd7589aae71fbfd71ca34334064d181df64bf8b7feaeee19706aba4cffd1de35cc7bbaeeaa0af96be2d7f40fcbc7bc0ab69533a7ae9ffc4fb
+  languageName: node
+  linkType: hard
+
+"sonner@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "sonner@npm:1.7.1"
+  peerDependencies:
+    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10/a67279e3db9cf0ae235cc316812b22489dcbe2c9488e12313f35c5073520640ffe3c955a61ab1992ed4b4b96ca72087b6687b725305a0e3be9b1279c5a1fc735
   languageName: node
   linkType: hard
 

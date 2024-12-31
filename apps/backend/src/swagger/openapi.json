@@ -223,6 +223,21 @@
           "auth"
         ]
       }
+    },
+    "/auth/debug/latest-verification-token": {
+      "get": {
+        "operationId": "AuthController_getLatestVerificationToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the latest verification token"
+          }
+        },
+        "summary": "Get the latest verification token (DEVELOPMENT ONLY)",
+        "tags": [
+          "auth"
+        ]
+      }
     }
   },
   "info": {

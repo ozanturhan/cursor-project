@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException, BadRequestExcepti
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { RegisterDto, LoginDto, AuthResponse } from './dto/auth.dto';
 import { Prisma, User, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -13,6 +14,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async register(data: RegisterDto): Promise<User & { roles: any[] }> {
@@ -46,8 +48,8 @@ export class AuthService {
       },
     });
 
-    // TODO: Send verification email
-    console.log(`Verification token: ${verificationToken}`);
+    // Send verification email
+    await this.emailService.sendVerificationEmail(user, verificationToken);
 
     return user;
   }
@@ -81,6 +83,8 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<void> {
+    console.log('Attempting to verify email with token:', token);
+
     const user = await this.prisma.user.findFirst({
       where: {
         emailVerificationToken: token,
@@ -91,7 +95,10 @@ export class AuthService {
       },
     });
 
+    console.log('User found during verification:', user ? user.id : 'No user found');
+
     if (!user) {
+      console.error('Invalid or expired verification token:', token);
       throw new BadRequestException('Invalid or expired verification token');
     }
 
@@ -103,6 +110,8 @@ export class AuthService {
         emailVerificationExpires: null,
       },
     });
+
+    console.log('Email verified successfully for user:', user.id);
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -126,8 +135,8 @@ export class AuthService {
       },
     });
 
-    // TODO: Send password reset email
-    console.log(`Reset token: ${resetToken}`);
+    // Send password reset email
+    await this.emailService.sendPasswordResetEmail(user, resetToken);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {

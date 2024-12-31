@@ -17,7 +17,16 @@ export default function LoginPage() {
 
   useEffect(() => {
     const message = searchParams.get('message');
+    const verified = searchParams.get('verified');
+    const error = searchParams.get('error');
+
     if (message) setMessage(message);
+    if (verified) {
+      setMessage('Your email has been successfully verified. You can now log in.');
+    }
+    if (error === 'verification_failed') {
+      setError('Email verification failed. The link may be invalid or expired. Please request a new verification email.');
+    }
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

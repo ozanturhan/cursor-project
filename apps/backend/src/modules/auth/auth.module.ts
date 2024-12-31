@@ -7,6 +7,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       ttl: 60000, // 1 minute
       limit: 5, // 5 requests per minute
     }]),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [
