@@ -1,20 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/": {
-      "get": {
-        "operationId": "AppController_getHello",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "App"
-        ]
-      }
-    },
     "/auth/me": {
       "get": {
         "operationId": "AuthController_getProfile",
@@ -238,6 +224,230 @@
           "auth"
         ]
       }
+    },
+    "/profile": {
+      "get": {
+        "operationId": "ProfileController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the user profile"
+          }
+        },
+        "summary": "Get current user profile",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated profile"
+          }
+        },
+        "summary": "Update current user profile",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/{userId}": {
+      "get": {
+        "operationId": "ProfileController_getPublicProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the public profile"
+          }
+        },
+        "summary": "Get public profile of a user",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/social-links": {
+      "post": {
+        "operationId": "ProfileController_addSocialLink",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSocialLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created social link"
+          }
+        },
+        "summary": "Add a social link",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/social-links/{id}": {
+      "put": {
+        "operationId": "ProfileController_updateSocialLink",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSocialLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated social link"
+          }
+        },
+        "summary": "Update a social link",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "delete": {
+        "operationId": "ProfileController_deleteSocialLink",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the deleted social link"
+          }
+        },
+        "summary": "Delete a social link",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/availability": {
+      "post": {
+        "operationId": "ProfileController_addAvailability",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAvailabilityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created availability slot"
+          }
+        },
+        "summary": "Add availability slot",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/availability/{id}": {
+      "put": {
+        "operationId": "ProfileController_updateAvailability",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvailabilityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated availability slot"
+          }
+        },
+        "summary": "Update availability slot",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "delete": {
+        "operationId": "ProfileController_deleteAvailability",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the deleted availability slot"
+          }
+        },
+        "summary": "Delete availability slot",
+        "tags": [
+          "Profile"
+        ]
+      }
     }
   },
   "info": {
@@ -426,6 +636,123 @@
         "required": [
           "refreshToken"
         ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "profession": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSocialLinkDto": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "TWITTER",
+              "LINKEDIN",
+              "GITHUB",
+              "WEBSITE"
+            ]
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform",
+          "url"
+        ]
+      },
+      "UpdateSocialLinkDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "description": "Day of week (1-7, Monday-Sunday)",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "startHour": {
+            "type": "number",
+            "description": "Start hour (0-23)",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "startMinute": {
+            "type": "number",
+            "description": "Start minute (0-59)",
+            "minimum": 0,
+            "maximum": 59
+          },
+          "endHour": {
+            "type": "number",
+            "description": "End hour (0-23)",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "endMinute": {
+            "type": "number",
+            "description": "End minute (0-59)",
+            "minimum": 0,
+            "maximum": 59
+          }
+        },
+        "required": [
+          "dayOfWeek",
+          "startHour",
+          "startMinute",
+          "endHour",
+          "endMinute"
+        ]
+      },
+      "UpdateAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "startHour": {
+            "type": "number",
+            "description": "Start hour (0-23)",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "startMinute": {
+            "type": "number",
+            "description": "Start minute (0-59)",
+            "minimum": 0,
+            "maximum": 59
+          },
+          "endHour": {
+            "type": "number",
+            "description": "End hour (0-23)",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "endMinute": {
+            "type": "number",
+            "description": "End minute (0-59)",
+            "minimum": 0,
+            "maximum": 59
+          }
+        }
       }
     }
   }

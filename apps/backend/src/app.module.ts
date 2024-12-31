@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { EmailModule } from './modules/email/email.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
@@ -11,8 +11,9 @@ import { PrismaService } from './prisma/prisma.service';
       isGlobal: true,
     }),
     AuthModule,
+    EmailModule,
+    ProfileModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [PrismaService],
 })
 export class AppModule {}

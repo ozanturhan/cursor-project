@@ -55,17 +55,33 @@ model UserRole {
 model Profile {
   id          String   @id @default(uuid())
   userId      String
-  profession  String
-  bio         String?
+  profession  String?
+  bio         String?  @db.Text
   hourlyRate  Decimal? @db.Decimal(10, 2)
   avatarUrl   String?
+  location    String?
+  title       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user         User          @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
   availabilities Availability[]
+  socialLinks    SocialLink[]
 
   @@index([userId])
+}
+
+model SocialLink {
+  id        String   @id @default(uuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  platform  String   // e.g., "TWITTER", "LINKEDIN", "GITHUB"
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([profileId, platform])
+  @@index([profileId])
 }
 
 model Availability {
@@ -78,6 +94,9 @@ model Availability {
   endHour     Int       // 0-23 representing hour of day
   endMinute   Int       // 0-59 representing minutes
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([profileId])
 }
 
 model Booking {
