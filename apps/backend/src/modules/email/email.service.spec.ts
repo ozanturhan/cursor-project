@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email.service';
-import { Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Handlebars from 'handlebars';
 
 jest.mock('nodemailer');
 jest.mock('fs');

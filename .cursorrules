@@ -41,6 +41,14 @@ FRONTEND_RULES={
       "state-updates": "use event handlers or state management libraries",
       "api-calls": "use React Query mutations or similar"
     }
+  },
+  "searchParams": {
+    "rules": [
+      "Server components using searchParams must be async",
+      "Always await searchParams and destructure values",
+      "Use pattern: const { param1, param2 } = await searchParams"
+    ],
+    "example": "export default async function Page({ searchParams }) {\n  const { value } = await searchParams;\n}"
   }
 }
 
