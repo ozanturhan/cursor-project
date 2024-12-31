@@ -2,6 +2,7 @@ import { AuthResponse } from '@/types/auth';
 import type { NextAuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { authApi } from '@/api/auth';
 
 interface Credentials {
   email: string;
@@ -21,17 +22,10 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
         
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials)
+          const auth = await authApi.login({
+            email: credentials.email,
+            password: credentials.password,
           });
-
-          if (!response.ok) {
-            throw new Error('Invalid credentials');
-          }
-
-          const auth: AuthResponse = await response.json();
           
           return {
             id: auth.user.id,
@@ -70,17 +64,7 @@ export const authOptions: NextAuthOptions = {
 
       // Refresh token
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken: token.refreshToken })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to refresh token');
-        }
-
-        const auth: AuthResponse = await response.json();
+        const auth = await authApi.refreshToken(token.refreshToken);
 
         return {
           ...token,
