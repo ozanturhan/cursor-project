@@ -170,4 +170,5 @@ export class ProfileService {
 ## References
 - [NestJS Modules](https://docs.nestjs.com/modules)
 - [Modular Monolith: A Primer](https://www.kamilgrzybek.com/design/modular-monolith-primer/)
-- [Event-Driven Architecture](https://docs.nestjs.com/techniques/events) 
+- [Event-Driven Architecture](https://docs.nestjs.com/techniques/events)
+- [CONVERSATION-008: Modular Monolith Discussion](../conversations/CONVERSATION-008-Modular-Monolith-Discussion.md) 

@@ -120,4 +120,6 @@ model Profile {
 ## References
 - [GitHub Username Policy](https://docs.github.com/en/rest/users)
 - [Twitter Username Requirements](https://help.twitter.com/en/managing-your-account/twitter-username-rules)
-- [Prisma Unique Constraints](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#unique-fields) 
+- [Prisma Unique Constraints](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#unique-fields)
+- [RFC-010: User Profiles](./RFC-010-User-Profiles.md)
+- [CONVERSATION-011: Profile Username Implementation](../conversations/CONVERSATION-011-Profile-Username-Implementation.md) 

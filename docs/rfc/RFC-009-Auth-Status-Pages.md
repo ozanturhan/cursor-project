@@ -77,4 +77,5 @@ Each error page will:
 ## References
 - RFC-002: Authentication System
 - Material Design Guidelines for Error States
-- Next.js App Router Documentation 
+- Next.js App Router Documentation
+- [CONVERSATION-010: Email Verification Flow](../conversations/CONVERSATION-010-Email-Verification-Flow.md) 

@@ -173,6 +173,12 @@ interface TokenPayload {
    - [ ] Resend verification email functionality
 
 ## References
+- [Next.js Authentication Documentation](https://nextjs.org/docs/authentication)
 - [NestJS Authentication](https://docs.nestjs.com/security/authentication)
 - [JWT Best Practices](https://auth0.com/blog/jwt-authentication-best-practices/)
-- [Password Hashing](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) 
+- [Password Hashing](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- [CONVERSATION-001: Authentication Implementation](../conversations/CONVERSATION-001-Authentication-Implementation.md)
+- [CONVERSATION-002: Auth Schema Implementation](../conversations/CONVERSATION-002-Auth-Schema-Implementation.md)
+- [CONVERSATION-003: Core Auth Implementation](../conversations/CONVERSATION-003-Core-Auth-Implementation.md)
+- [CONVERSATION-004: Auth Testing](../conversations/CONVERSATION-004-Auth-Testing.md)
+- [CONVERSATION-005: Auth Test Fixes](../conversations/CONVERSATION-005-Auth-Test-Fixes.md) 

@@ -66,4 +66,5 @@ The changes have been implemented and tested, including:
 
 ## References
 - Related to RFC-002-Authentication
-- Related to RFC-003-NextAuth-Integration 
+- Related to RFC-003-NextAuth-Integration
+- [CONVERSATION-009: User Roles Update](../conversations/CONVERSATION-009-User-Roles-Update.md) 

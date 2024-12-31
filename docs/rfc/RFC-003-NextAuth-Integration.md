@@ -362,4 +362,5 @@ callbacks: {
 ## References
 - [Next-Auth Documentation](https://next-auth.js.org/)
 - [JWT Best Practices](https://auth0.com/blog/jwt-authentication-best-practices/)
-- [RFC-002: Authentication System](./RFC-002-Authentication.md) 
+- [RFC-002: Authentication System](./RFC-002-Authentication.md)
+- [CONVERSATION-006: NextAuth Integration](../conversations/CONVERSATION-006-NextAuth-Integration.md) 

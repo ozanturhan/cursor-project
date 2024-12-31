@@ -161,4 +161,5 @@ model Availability {
 - [Next.js App Router Documentation](https://nextjs.org/docs/app)
 - [Prisma Relations](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
 - [Date-fns Timezone](https://date-fns.org/docs/Time-Zones)
-- [RFC-013: Profile Username](./RFC-013-Profile-Username.md) - Username implementation details 
+- [RFC-013: Profile Username](./RFC-013-Profile-Username.md) - Username implementation details
+- [CONVERSATION-011: Profile Username Implementation](../conversations/CONVERSATION-011-Profile-Username-Implementation.md) 
