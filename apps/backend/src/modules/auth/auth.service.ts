@@ -49,7 +49,12 @@ export class AuthService {
     });
 
     // Send verification email
-    await this.emailService.sendVerificationEmail(user, verificationToken);
+    try {
+      await this.emailService.sendVerificationEmail(user, verificationToken);
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      // Continue with registration even if email sending fails
+    }
 
     return user;
   }

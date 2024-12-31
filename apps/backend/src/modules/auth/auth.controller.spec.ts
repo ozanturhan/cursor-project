@@ -2,6 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Role } from '@prisma/client';
+import { UnauthorizedException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+
+type ConfigType = {
+  JWT_SECRET: string;
+  JWT_REFRESH_SECRET: string;
+  JWT_EXPIRATION: string;
+  JWT_REFRESH_EXPIRATION: string;
+};
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -14,8 +24,8 @@ describe('AuthController', () => {
     fullName: 'Test User',
     roles: [{ id: '1', userId: '1', role: Role.CLIENT, createdAt: new Date(), updatedAt: new Date() }],
     emailVerified: null,
-    emailVerificationToken: null,
-    emailVerificationExpires: null,
+    emailVerificationToken: 'verification-token',
+    emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     passwordResetToken: null,
     passwordResetExpires: null,
     image: null,
@@ -35,6 +45,32 @@ describe('AuthController', () => {
               user: mockUser,
               accessToken: 'accessToken',
               refreshToken: 'refreshToken',
+            }),
+            verifyEmail: jest.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
+          provide: PrismaService,
+          useValue: {
+            user: {
+              findUnique: jest.fn(),
+              findFirst: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+            },
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockImplementation((key: keyof ConfigType) => {
+              const config: ConfigType = {
+                JWT_SECRET: 'test-secret',
+                JWT_REFRESH_SECRET: 'test-refresh-secret',
+                JWT_EXPIRATION: '15m',
+                JWT_REFRESH_EXPIRATION: '7d',
+              };
+              return config[key];
             }),
           },
         },
@@ -77,6 +113,23 @@ describe('AuthController', () => {
         refreshToken: 'refreshToken',
       });
       expect(service.login).toHaveBeenCalledWith(loginDto);
+    });
+  });
+
+  describe('verifyEmail', () => {
+    const token = 'verification-token';
+
+    it('should verify email successfully', async () => {
+      await controller.verifyEmail({ token });
+      expect(service.verifyEmail).toHaveBeenCalledWith(token);
+    });
+
+    it('should throw UnauthorizedException if verification fails', async () => {
+      jest.spyOn(service, 'verifyEmail').mockRejectedValue(new UnauthorizedException());
+      
+      await expect(controller.verifyEmail({ token })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 }); 
