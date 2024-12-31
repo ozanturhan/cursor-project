@@ -20,6 +20,10 @@ describe('AuthController (e2e)', () => {
   });
 
   afterAll(async () => {
+    // Clean up in correct order (respect foreign key constraints)
+    await prisma.availability.deleteMany();
+    await prisma.socialLink.deleteMany();
+    await prisma.profile.deleteMany();
     await prisma.userRole.deleteMany();
     await prisma.user.deleteMany();
     await app.close();
