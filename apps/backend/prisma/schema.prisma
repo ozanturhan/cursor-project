@@ -104,6 +104,9 @@ model Session {
   updatedAt   DateTime  @updatedAt
 }
 
+// This model is reserved for future OAuth/social login implementation
+// It will be used to store credentials for providers like Google, GitHub, etc.
+// Related to RFC-008: Social Authentication
 model Account {
   id                String  @id @default(uuid())
   userId            String

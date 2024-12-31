@@ -129,4 +129,9 @@ None
 7. RFC-007: User Roles System
    - Status: Implemented
    - Dependencies: RFC-002, RFC-003
-   - Next Steps: Implement role management UI 
+   - Next Steps: Implement role management UI
+
+8. RFC-008: Social Authentication
+   - Status: Proposed
+   - Dependencies: RFC-002, RFC-003
+   - Next Steps: Review and acceptance 
