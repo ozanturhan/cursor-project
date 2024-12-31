@@ -19,7 +19,7 @@ export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: RegisterData) => api.post('/auth/register', data),
     onSuccess: () => {
       router.push('/auth/login?message=Registration successful! Please check your email to verify your account.');
@@ -64,7 +64,7 @@ export function RegisterForm() {
               name="fullName"
               placeholder="Enter your full name"
               autoComplete="name"
-              isDisabled={isLoading}
+              isDisabled={isPending}
             />
           </FormControl>
 
@@ -74,7 +74,7 @@ export function RegisterForm() {
               name="email"
               placeholder="Enter your email"
               autoComplete="email"
-              isDisabled={isLoading}
+              isDisabled={isPending}
             />
           </FormControl>
 
@@ -84,7 +84,7 @@ export function RegisterForm() {
               name="password"
               placeholder="Create a password"
               autoComplete="new-password"
-              isDisabled={isLoading}
+              isDisabled={isPending}
             />
           </FormControl>
 
@@ -93,7 +93,7 @@ export function RegisterForm() {
             variant="primary"
             size="lg"
             fullWidth
-            isLoading={isLoading}
+            isLoading={isPending}
           >
             Create account
           </Button>
