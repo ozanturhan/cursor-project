@@ -1,0 +1,128 @@
+{
+  "FRONTEND_LIBRARIES": {
+    "@headlessui/react": {
+      "required": true,
+      "usage": "For accessible UI components like dropdowns, modals, etc.",
+      "alternatives": "not allowed without team discussion"
+    },
+    "@heroicons/react": {
+      "required": true,
+      "usage": "For all icon needs in the application",
+      "alternatives": "not allowed without team discussion"
+    },
+    "clsx": {
+      "required": true,
+      "usage": "For class name construction",
+      "alternatives": "not allowed"
+    },
+    "tailwind-merge": {
+      "required": true,
+      "usage": "For merging Tailwind classes",
+      "alternatives": "not allowed"
+    }
+  },
+  "COMPONENT_RULES": {
+    "naming": {
+      "pattern": "PascalCase",
+      "examples": ["Button", "UserMenu", "ProfileCard"]
+    },
+    "structure": {
+      "location": "src/components/[domain]/[ComponentName].tsx",
+      "exports": "named exports only",
+      "imports": "absolute imports with @/ alias"
+    },
+    "props": {
+      "naming": "camelCase",
+      "interface": "ComponentNameProps",
+      "required": ["proper TypeScript types", "JSDoc comments for complex props"]
+    }
+  },
+  "STYLING_RULES": {
+    "approach": "Tailwind CSS utility classes",
+    "className": {
+      "merging": "use cn() utility",
+      "ordering": ["layout", "spacing", "typography", "colors", "states"]
+    },
+    "responsive": {
+      "approach": "mobile-first",
+      "breakpoints": ["sm", "md", "lg", "xl", "2xl"]
+    },
+    "darkMode": {
+      "support": "required for all components",
+      "implementation": "use dark: variant"
+    }
+  },
+  "ICON_RULES": {
+    "source": "@heroicons/react only",
+    "sizing": {
+      "default": "20/solid for general UI",
+      "navigation": "24/outline for navigation",
+      "mini": "20/solid for compact UI"
+    },
+    "naming": {
+      "pattern": "IconName + 'Icon'",
+      "example": "ChevronDownIcon"
+    }
+  },
+  "CLASSNAME_RULES": {
+    "merging": {
+      "utility": "cn() from @/lib/utils",
+      "pattern": "cn('base-classes', conditional && 'conditional-classes')"
+    },
+    "organization": {
+      "order": [
+        "layout classes",
+        "spacing classes",
+        "typography classes",
+        "color classes",
+        "state classes"
+      ]
+    }
+  },
+  "DOCUMENTATION_RULES": {
+    "required": [
+      "component description",
+      "props documentation",
+      "usage examples",
+      "accessibility notes"
+    ],
+    "format": "TSDoc/JSDoc style comments",
+    "location": "above component definition"
+  },
+  "TESTING_RULES": {
+    "unit": {
+      "framework": "Jest + React Testing Library",
+      "coverage": "minimum 80%"
+    },
+    "component": {
+      "requirements": [
+        "basic rendering",
+        "prop variations",
+        "user interactions",
+        "accessibility"
+      ]
+    }
+  },
+  "PERFORMANCE_RULES": {
+    "imports": {
+      "icons": "import individual icons, no bulk imports",
+      "components": "use dynamic imports for large components"
+    },
+    "rendering": {
+      "optimization": [
+        "use memo for expensive computations",
+        "avoid unnecessary re-renders",
+        "lazy load off-screen content"
+      ]
+    }
+  },
+  "ACCESSIBILITY_RULES": {
+    "compliance": "WCAG 2.1 AA",
+    "requirements": [
+      "proper ARIA attributes",
+      "keyboard navigation",
+      "screen reader support",
+      "sufficient color contrast"
+    ]
+  }
+} 
