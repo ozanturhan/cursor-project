@@ -33,6 +33,17 @@
     },
     "db:generate": {
       "cache": false
+    },
+    "storybook": {
+      "cache": false,
+      "persistent": true
+    },
+    "build-storybook": {
+      "outputs": ["storybook-static/**"],
+      "dependsOn": ["^build"]
+    },
+    "test-storybook": {
+      "dependsOn": ["build-storybook"]
     }
   }
 }
