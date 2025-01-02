@@ -1,32 +1,30 @@
-import React from 'react';
+import { cn } from '@/lib/utils';
 
-export interface FormControlProps {
-  label: string;
+interface FormControlProps {
+  label?: string;
   error?: string;
-  helperText?: string;
-  isRequired?: boolean;
+  success?: string;
+  hint?: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
 }
 
-export const FormControl: React.FC<FormControlProps> = ({
-  label,
-  error,
-  helperText,
-  isRequired,
-  children,
-}) => {
+export function FormControl({ label, error, success, hint, children, className }: FormControlProps) {
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-neutral-700 mb-1">
-        {label}
-        {isRequired && <span className="text-error-500 ml-1">*</span>}
-      </label>
-      {children}
-      {(error || helperText) && (
-        <p className={`mt-1 text-sm ${error ? 'text-error-500' : 'text-neutral-500'}`}>
-          {error || helperText}
-        </p>
+    <div className={cn('space-y-2', className)}>
+      {label && (
+        <label className="block text-sm font-medium text-neutral-700">
+          {label}
+        </label>
       )}
+      {children}
+      {error ? (
+        <p className="text-sm text-error-600">{error}</p>
+      ) : success ? (
+        <p className="text-sm text-success-600">{success}</p>
+      ) : hint ? (
+        <p className="text-sm text-neutral-600">{hint}</p>
+      ) : null}
     </div>
   );
-}; 
+} 

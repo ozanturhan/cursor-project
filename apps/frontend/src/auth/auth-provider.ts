@@ -28,10 +28,12 @@ export const authOptions: NextAuthOptions = {
             password: credentials.password,
           });
           
+          console.log('auth', JSON.stringify(auth, null, 2));
           return {
             id: auth.user.id,
             email: auth.user.email,
             name: auth.user.fullName,
+            username: auth.user.username,
             roles: auth.user.roles,
             accessToken: auth.accessToken,
             refreshToken: auth.refreshToken,
@@ -62,10 +64,10 @@ export const authOptions: NextAuthOptions = {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
           accessTokenExpires: Date.now() + 15 * 60 * 1000, // 15 minutes
-          roles: user.roles
+          roles: user.roles,
+          username: user.username
         };
       }
-
 
       console.log('token', token);
       // Return token if it's still valid
@@ -83,7 +85,8 @@ export const authOptions: NextAuthOptions = {
           accessToken: auth.accessToken,
           refreshToken: auth.refreshToken,
           accessTokenExpires: Date.now() + 15 * 60 * 1000,
-          roles: auth.user.roles
+          roles: auth.user.roles,
+          username: auth.user.username
         };
       } catch {
         return { ...token, error: 'RefreshTokenError' };
@@ -94,11 +97,16 @@ export const authOptions: NextAuthOptions = {
       return {
         ...session,
         accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        accessTokenExpires: token.accessTokenExpires,
         error: token.error,
         user: {
-          ...session.user,
           id: token.sub,
-          roles: token.roles
+          email: token.email,
+          name: token.name,
+          username: token.username,
+          roles: token.roles,
+          image: token.picture
         }
       };
     }

@@ -7,6 +7,11 @@ export class RegisterDto {
   @IsEmail()
   email!: string;
 
+  @ApiProperty({ example: 'johndoe' })
+  @IsString()
+  @MinLength(3)
+  username!: string;
+
   @ApiProperty({ example: 'password123', minLength: 8 })
   @IsString()
   @MinLength(8)
@@ -58,6 +63,9 @@ export class UserResponseDto {
 
   @ApiProperty({ example: 'user@example.com' })
   email!: string;
+
+  @ApiProperty({ example: 'johndoe' })
+  username!: string;
 
   @ApiProperty({ example: 'John Doe' })
   fullName!: string;

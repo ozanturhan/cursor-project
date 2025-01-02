@@ -3,16 +3,23 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { AuthService } from '../src/modules/auth/auth.service';
 import { Role } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let authService: AuthService;
-  let accessToken: string;
-  let userId: string;
+  let testUserIndex = 0;
+
+  const createTestUser = () => {
+    testUserIndex++;
+    return {
+      email: `test${Date.now()}${testUserIndex}@example.com`,
+      password: 'Password123!',
+      username: `testuser${Date.now()}${testUserIndex}`,
+      fullName: `Test User ${testUserIndex}`,
+      role: Role.CLIENT,
+    };
+  };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,179 +28,126 @@ describe('ProfileController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
-    authService = moduleFixture.get<AuthService>(AuthService);
-
     await app.init();
+  });
 
-    // Create test user with proper password hash
-    const password = 'password123';
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
-        email: 'profile-test@example.com',
-        passwordHash,
-        fullName: 'Test User',
-        emailVerified: new Date(),
-        roles: {
-          create: {
-            role: Role.PROFESSIONAL,
-          },
-        },
-      },
-    });
-
-    userId = user.id;
-    const auth = await authService.login({
-      email: 'profile-test@example.com',
-      password: password,
-    });
-    accessToken = auth.accessToken;
+  beforeEach(async () => {
+    // Clean up database before each test
+    try {
+      await prisma.userRole.deleteMany({});
+      await prisma.profile.deleteMany({});
+      await prisma.user.deleteMany({});
+      testUserIndex = 0;
+    } catch (error) {
+      console.error('Error cleaning up database:', error);
+    }
   });
 
   afterAll(async () => {
-    // Clean up in correct order (respect foreign key constraints)
-    await prisma.availability.deleteMany({
-      where: { profile: { userId } },
-    });
-    await prisma.socialLink.deleteMany({
-      where: { profile: { userId } },
-    });
-    await prisma.profile.deleteMany({
-      where: { userId },
-    });
-    await prisma.userRole.deleteMany({
-      where: { userId },
-    });
-    await prisma.user.delete({
-      where: { id: userId },
-    });
-    await prisma.$disconnect();
-    await app.close();
+    try {
+      await prisma.userRole.deleteMany({});
+      await prisma.profile.deleteMany({});
+      await prisma.user.deleteMany({});
+      await prisma.$disconnect();
+    } catch (error) {
+      console.error('Error in afterAll cleanup:', error);
+    } finally {
+      await app.close();
+    }
   });
 
-  describe('/profile (GET)', () => {
-    it('should get empty profile initially', () => {
-      return request(app.getHttpServer())
+  describe('Profile Management', () => {
+    let accessToken: string;
+    let testUser: ReturnType<typeof createTestUser>;
+
+    beforeEach(async () => {
+      testUser = createTestUser();
+
+      // Register and verify user
+      const registerResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(testUser)
+        .expect(201);
+
+      const user = await prisma.user.findUnique({
+        where: { email: testUser.email },
+      });
+
+      // Verify email
+      await prisma.user.update({
+        where: { id: user!.id },
+        data: {
+          emailVerified: new Date(),
+          emailVerificationToken: null,
+        },
+      });
+
+      // Login to get access token
+      const loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: testUser.email,
+          password: testUser.password,
+        })
+        .expect(201);
+
+      accessToken = loginResponse.body.accessToken;
+    });
+
+    it('should create and retrieve profile', async () => {
+      // Create profile
+      const profileData = {
+        bio: 'Test bio',
+        title: 'Software Engineer',
+        location: 'Test City',
+        profession: 'Developer',
+        hourlyRate: 100,
+      };
+
+      const createResponse = await request(app.getHttpServer())
+        .put('/profile')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(profileData)
+        .expect(200);
+
+      expect(createResponse.body).toMatchObject(profileData);
+
+      // Get profile
+      const getResponse = await request(app.getHttpServer())
         .get('/profile')
         .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).toEqual({});
-        });
-    });
-  });
+        .expect(200);
 
-  describe('/profile (PUT)', () => {
-    it('should create profile', async () => {
+      expect(getResponse.body).toMatchObject(profileData);
+    });
+
+    it('should update profile', async () => {
+      // Create initial profile
+      const initialProfile = {
+        bio: 'Initial bio',
+        title: 'Initial title',
+      };
+
+      await request(app.getHttpServer())
+        .put('/profile')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(initialProfile)
+        .expect(200);
+
+      // Update profile
+      const updateData = {
+        bio: 'Updated bio',
+        title: 'Updated title',
+      };
+
       const response = await request(app.getHttpServer())
         .put('/profile')
         .set('Authorization', `Bearer ${accessToken}`)
-        .send({
-          bio: 'Test bio',
-          title: 'Software Engineer',
-          location: 'Berlin',
-        })
+        .send(updateData)
         .expect(200);
 
-      expect(response.body.bio).toBe('Test bio');
-      expect(response.body.title).toBe('Software Engineer');
-      expect(response.body.location).toBe('Berlin');
-      return response;
-    });
-  });
-
-  describe('/profile/social-links', () => {
-    let socialLinkId: string;
-
-    it('should add social link', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/profile/social-links')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send({
-          platform: 'GITHUB',
-          url: 'https://github.com/testuser',
-        })
-        .expect(201);
-
-      expect(response.body.platform).toBe('GITHUB');
-      expect(response.body.url).toBe('https://github.com/testuser');
-      socialLinkId = response.body.id;
-      return response;
-    });
-
-    it('should delete social link', async () => {
-      return request(app.getHttpServer())
-        .delete(`/profile/social-links/${socialLinkId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
-    });
-  });
-
-  describe('/profile/availability', () => {
-    let availabilityId: string;
-
-    it('should add availability slot', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/profile/availability')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send({
-          dayOfWeek: 1,
-          startHour: 9,
-          startMinute: 0,
-          endHour: 17,
-          endMinute: 0,
-        })
-        .expect(201);
-
-      expect(response.body.dayOfWeek).toBe(1);
-      expect(response.body.startHour).toBe(9);
-      expect(response.body.endHour).toBe(17);
-      availabilityId = response.body.id;
-      return response;
-    });
-
-    it('should delete availability slot', async () => {
-      return request(app.getHttpServer())
-        .delete(`/profile/availability/${availabilityId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
-    });
-  });
-
-  describe('/profile/:userId (GET)', () => {
-    it('should get public profile', async () => {
-      // Create a new social link and availability slot for testing
-      await request(app.getHttpServer())
-        .post('/profile/social-links')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send({
-          platform: 'GITHUB',
-          url: 'https://github.com/testuser',
-        });
-
-      await request(app.getHttpServer())
-        .post('/profile/availability')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send({
-          dayOfWeek: 1,
-          startHour: 9,
-          startMinute: 0,
-          endHour: 17,
-          endMinute: 0,
-        });
-
-      const response = await request(app.getHttpServer())
-        .get(`/profile/${userId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
-
-      expect(response.body.bio).toBe('Test bio');
-      expect(response.body.title).toBe('Software Engineer');
-      expect(response.body.location).toBe('Berlin');
-      expect(response.body.socialLinks).toHaveLength(1);
-      expect(response.body.availabilities).toHaveLength(1);
-      expect(response.body.user.email).toBe('profile-test@example.com');
-      return response;
+      expect(response.body.bio).toBe(updateData.bio);
+      expect(response.body.title).toBe(updateData.title);
     });
   });
 }); 

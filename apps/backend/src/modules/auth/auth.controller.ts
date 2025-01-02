@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Query, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, UseGuards, Request, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, AuthResponseDto, VerifyEmailDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -107,5 +107,13 @@ export class AuthController {
       token: latestUser.emailVerificationToken,
       verificationLink,
     };
+  }
+
+  @Get('check-username/:username')
+  @ApiOperation({ summary: 'Check username availability' })
+  @ApiResponse({ status: 200, description: 'Returns true if username is available' })
+  async checkUsername(@Param('username') username: string): Promise<{ isAvailable: boolean }> {
+    const isAvailable = await this.authService.checkUsername(username);
+    return { isAvailable };
   }
 } 

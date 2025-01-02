@@ -20,6 +20,7 @@ describe('AuthController', () => {
   const mockUser = {
     id: '1',
     email: 'test@example.com',
+    username: 'testuser',
     passwordHash: '$2b$10$test',
     fullName: 'Test User',
     roles: [{ id: '1', userId: '1', role: Role.CLIENT, createdAt: new Date(), updatedAt: new Date() }],
@@ -47,6 +48,7 @@ describe('AuthController', () => {
               refreshToken: 'refreshToken',
             }),
             verifyEmail: jest.fn().mockResolvedValue(undefined),
+            checkUsername: jest.fn(),
           },
         },
         {
@@ -88,8 +90,10 @@ describe('AuthController', () => {
   describe('register', () => {
     const registerDto = {
       email: 'test@example.com',
+      username: 'testuser',
       password: 'password123',
       fullName: 'Test User',
+      role: Role.CLIENT,
     };
 
     it('should register a new user', async () => {
@@ -130,6 +134,22 @@ describe('AuthController', () => {
       await expect(controller.verifyEmail({ token })).rejects.toThrow(
         UnauthorizedException,
       );
+    });
+  });
+
+  describe('checkUsername', () => {
+    it('should return availability status for username', async () => {
+      jest.spyOn(service, 'checkUsername').mockResolvedValue(true);
+      const result = await controller.checkUsername('testuser');
+      expect(result).toEqual({ isAvailable: true });
+      expect(service.checkUsername).toHaveBeenCalledWith('testuser');
+    });
+
+    it('should return false for unavailable username', async () => {
+      jest.spyOn(service, 'checkUsername').mockResolvedValue(false);
+      const result = await controller.checkUsername('admin');
+      expect(result).toEqual({ isAvailable: false });
+      expect(service.checkUsername).toHaveBeenCalledWith('admin');
     });
   });
 }); 

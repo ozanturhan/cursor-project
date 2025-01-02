@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   fullName: string;
+  username: string;
   roles?: {
     id: string;
     userId: string;
@@ -10,6 +11,9 @@ export interface User {
     updatedAt: Date;
   }[];
   image?: string | null;
+  profiles?: {
+    username: string | null;
+  }[];
 }
 
 export interface AuthResponse {
@@ -22,13 +26,27 @@ declare module 'next-auth' {
   interface Session {
     accessToken?: string;
     error?: 'RefreshTokenError';
-    user: User;
+    user: {
+      id: string;
+      email?: string;
+      name?: string;
+      username: string;
+      roles?: {
+        id: string;
+        userId: string;
+        role: 'CLIENT' | 'PROFESSIONAL';
+        createdAt: Date;
+        updatedAt: Date;
+      }[];
+      image?: string | null;
+    };
   }
 
   interface User {
     id: string;
-    email: string;
-    name: string;
+    email?: string;
+    name?: string;
+    username: string;
     roles?: {
       id: string;
       userId: string;
@@ -37,8 +55,8 @@ declare module 'next-auth' {
       updatedAt: Date;
     }[];
     image?: string | null;
-    accessToken: string;
-    refreshToken: string;
+    accessToken?: string;
+    refreshToken?: string;
   }
 }
 
@@ -48,6 +66,7 @@ declare module 'next-auth/jwt' {
     refreshToken: string;
     accessTokenExpires: number;
     error?: 'RefreshTokenError';
+    username: string;
     roles?: {
       id: string;
       userId: string;

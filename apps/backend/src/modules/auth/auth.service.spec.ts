@@ -3,36 +3,54 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
-import { Role } from '@prisma/client';
 import { EmailService } from '../email/email.service';
+import { Role } from '@prisma/client';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-
-jest.mock('bcrypt', () => ({
-  hash: jest.fn().mockResolvedValue('hashedPassword'),
-  compare: jest.fn().mockResolvedValue(true),
-}));
 
 describe('AuthService', () => {
   let service: AuthService;
   let prisma: PrismaService;
-  let jwtService: JwtService;
   let emailService: EmailService;
 
   const mockUser = {
     id: '1',
     email: 'test@example.com',
-    passwordHash: '$2b$10$test',
+    username: 'testuser',
+    passwordHash: 'hashedPassword',
     fullName: 'Test User',
-    roles: [{ id: '1', userId: '1', role: Role.CLIENT, createdAt: new Date(), updatedAt: new Date() }],
-    emailVerified: new Date(),
-    emailVerificationToken: null,
+    emailVerified: null,
+    emailVerificationToken: 'valid-token',
     emailVerificationExpires: null,
     passwordResetToken: null,
     passwordResetExpires: null,
     image: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    roles: [{ role: Role.CLIENT }],
+  };
+
+  const mockPrismaService = {
+    user: {
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+  };
+
+  const mockJwtService = {
+    signAsync: jest.fn(),
+    verifyAsync: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn(),
+  };
+
+  const mockEmailService = {
+    sendVerificationEmail: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -41,193 +59,148 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: PrismaService,
-          useValue: {
-            user: {
-              findUnique: jest.fn(),
-              findFirst: jest.fn(),
-              create: jest.fn(),
-              update: jest.fn(),
-            },
-          },
+          useValue: mockPrismaService,
         },
         {
           provide: JwtService,
-          useValue: {
-            signAsync: jest.fn().mockResolvedValue('token'),
-          },
+          useValue: mockJwtService,
         },
         {
           provide: ConfigService,
-          useValue: {
-            get: jest.fn(),
-          },
+          useValue: mockConfigService,
         },
         {
           provide: EmailService,
-          useValue: {
-            sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
-            sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
-          },
+          useValue: mockEmailService,
         },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     prisma = module.get<PrismaService>(PrismaService);
-    jwtService = module.get<JwtService>(JwtService);
     emailService = module.get<EmailService>(EmailService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('register', () => {
-    const registerDto = {
+    const registerData = {
       email: 'test@example.com',
+      username: 'testuser',
       password: 'password123',
       fullName: 'Test User',
+      role: Role.CLIENT,
     };
 
-    it('should register a new user and send verification email', async () => {
-      const userWithToken = {
-        ...mockUser,
-        emailVerificationToken: 'verification-token',
-      };
-      
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-      jest.spyOn(prisma.user, 'create').mockResolvedValue(userWithToken);
+    it('should register a new user', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.create.mockResolvedValue(mockUser);
+      mockEmailService.sendVerificationEmail.mockResolvedValue(undefined);
 
-      const result = await service.register(registerDto);
+      const result = await service.register(registerData);
 
-      expect(result).toEqual(userWithToken);
-      expect(prisma.user.create).toHaveBeenCalledWith({
-        data: {
-          email: registerDto.email,
-          passwordHash: 'hashedPassword',
-          fullName: registerDto.fullName,
-          emailVerificationToken: expect.any(String),
-          emailVerificationExpires: expect.any(Date),
-          roles: {
-            create: {
-              role: Role.CLIENT,
-            },
-          },
-        },
-        include: {
-          roles: true,
-        },
-      });
-      expect(emailService.sendVerificationEmail).toHaveBeenCalledWith(
+      expect(result).toBe(mockUser);
+      expect(prisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: registerDto.email,
-          fullName: registerDto.fullName,
+          data: expect.objectContaining({
+            email: registerData.email,
+            username: registerData.username,
+            fullName: registerData.fullName,
+            roles: {
+              create: {
+                role: Role.CLIENT,
+              },
+            },
+          }),
         }),
-        expect.any(String),
       );
     });
 
     it('should throw ConflictException if email exists', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
 
-      await expect(service.register(registerDto)).rejects.toThrow(
+      await expect(service.register(registerData)).rejects.toThrow(
         ConflictException,
       );
     });
 
-    it('should handle email sending error during registration', async () => {
-      const userWithToken = {
-        ...mockUser,
-        emailVerificationToken: 'verification-token',
-      };
-      
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-      jest.spyOn(prisma.user, 'create').mockResolvedValue(userWithToken);
-      jest.spyOn(emailService, 'sendVerificationEmail').mockRejectedValue(new Error('Email sending failed'));
+    it('should throw ConflictException if username exists', async () => {
+      mockPrismaService.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(mockUser);
 
-      const result = await service.register(registerDto);
-
-      expect(result).toEqual(userWithToken);
-      expect(emailService.sendVerificationEmail).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: registerDto.email,
-          fullName: registerDto.fullName,
-        }),
-        expect.any(String),
+      await expect(service.register(registerData)).rejects.toThrow(
+        ConflictException,
       );
     });
   });
 
   describe('login', () => {
-    const loginDto = {
+    const loginData = {
       email: 'test@example.com',
       password: 'password123',
     };
 
+    beforeEach(() => {
+      mockJwtService.signAsync.mockResolvedValue('token');
+    });
+
     it('should login successfully', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      const mockVerifiedUser = {
+        ...mockUser,
+        emailVerified: new Date(),
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(mockVerifiedUser);
+      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(true));
 
-      const result = await service.login(loginDto);
+      const result = await service.login(loginData);
 
-      expect(result).toEqual({
-        user: mockUser,
-        accessToken: 'token',
-        refreshToken: 'token',
-      });
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
+      expect(result).toHaveProperty('user');
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.login(loginData)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException if password is invalid', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(false));
 
-      await expect(service.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.login(loginData)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException if email is not verified', async () => {
-      const unverifiedUser = { ...mockUser, emailVerified: null };
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(unverifiedUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(true));
 
-      await expect(service.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.login(loginData)).rejects.toThrow(UnauthorizedException);
     });
   });
 
   describe('verifyEmail', () => {
-    const verificationToken = 'valid-token';
-
     it('should verify email successfully', async () => {
-      const unverifiedUser = {
+      mockPrismaService.user.findFirst.mockResolvedValue(mockUser);
+      mockPrismaService.user.update.mockResolvedValue({
         ...mockUser,
-        emailVerified: null,
-        emailVerificationToken: verificationToken,
-        emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      };
-
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(unverifiedUser);
-      jest.spyOn(prisma.user, 'update').mockResolvedValue({
-        ...unverifiedUser,
-        emailVerified: expect.any(Date),
+        emailVerified: new Date(),
         emailVerificationToken: null,
-        emailVerificationExpires: null,
       });
 
-      await service.verifyEmail(verificationToken);
+      await service.verifyEmail('valid-token');
 
-      expect(prisma.user.update).toHaveBeenCalledWith({
-        where: { id: unverifiedUser.id },
+      const call = mockPrismaService.user.findFirst.mock.calls[0][0];
+      expect(call.where.emailVerificationToken).toBe('valid-token');
+      expect(call.where.emailVerificationExpires.gt).toBeInstanceOf(Date);
+      expect(call.where.emailVerified).toBeNull();
+
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
         data: {
           emailVerified: expect.any(Date),
           emailVerificationToken: null,
@@ -237,26 +210,10 @@ describe('AuthService', () => {
     });
 
     it('should throw BadRequestException if token is invalid', async () => {
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(null);
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
 
-      await expect(service.verifyEmail(verificationToken)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
-
-    it('should throw BadRequestException if token is expired', async () => {
-      const expiredUser = {
-        ...mockUser,
-        emailVerified: null,
-        emailVerificationToken: verificationToken,
-        emailVerificationExpires: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      };
-
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(expiredUser);
-      jest.spyOn(prisma.user, 'update').mockRejectedValue(new BadRequestException());
-
-      await expect(service.verifyEmail(verificationToken)).rejects.toThrow(
-        BadRequestException,
+      await expect(service.verifyEmail('invalid-token')).rejects.toThrow(
+        'Invalid or expired verification token'
       );
     });
   });

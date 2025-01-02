@@ -1,50 +1,64 @@
-import { Controller, Get, Put, Post, Delete, Body, Param, UseGuards, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  NotFoundException,
+} from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { JwtAuthGuard } from '../../modules/auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../../modules/auth/decorators/current-user.decorator';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateSocialLinkDto, UpdateSocialLinkDto } from './dto/social-link.dto';
 import { CreateAvailabilityDto, UpdateAvailabilityDto } from './dto/availability.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('Profile')
+@ApiTags('profile')
 @Controller('profile')
-@UseGuards(JwtAuthGuard)
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get current user profile' })
-  @ApiResponse({ status: 200, description: 'Returns the user profile' })
-  async getProfile(@CurrentUser() user: any) {
-    return this.profileService.getProfile(user.id);
+  @ApiResponse({ status: 200, description: 'Returns the current user profile' })
+  async getProfile(@Request() req: { user: { id: string } }) {
+    return this.profileService.getProfile(req.user.id);
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiResponse({ status: 200, description: 'Returns the updated profile' })
+  async updateProfile(
+    @Request() req: { user: { id: string } },
+    @Body() data: UpdateProfileDto,
+  ) {
+    return this.profileService.updateProfile(req.user.id, data);
   }
 
   @Get(':userId')
-  @ApiOperation({ summary: 'Get public profile of a user' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get public profile by user ID' })
   @ApiResponse({ status: 200, description: 'Returns the public profile' })
   async getPublicProfile(@Param('userId') userId: string) {
     return this.profileService.getPublicProfile(userId);
   }
 
-  @Put()
-  @ApiOperation({ summary: 'Update current user profile' })
-  @ApiResponse({ status: 200, description: 'Returns the updated profile' })
-  async updateProfile(
-    @CurrentUser() user: any,
-    @Body() data: UpdateProfileDto,
-  ) {
-    return this.profileService.updateProfile(user.id, data);
-  }
-
+  // Social Links
   @Post('social-links')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Add a social link' })
   @ApiResponse({ status: 201, description: 'Returns the created social link' })
   async addSocialLink(
-    @CurrentUser() user: any,
+    @Request() req: { user: { id: string } },
     @Body() data: CreateSocialLinkDto,
   ) {
-    const profile = await this.profileService.getProfile(user.id);
+    const profile = await this.profileService.getProfile(req.user.id);
     if (!profile) {
       throw new NotFoundException('Profile not found');
     }
@@ -52,6 +66,7 @@ export class ProfileController {
   }
 
   @Put('social-links/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update a social link' })
   @ApiResponse({ status: 200, description: 'Returns the updated social link' })
   async updateSocialLink(
@@ -62,20 +77,23 @@ export class ProfileController {
   }
 
   @Delete('social-links/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete a social link' })
   @ApiResponse({ status: 200, description: 'Returns the deleted social link' })
   async deleteSocialLink(@Param('id') id: string) {
     return this.profileService.deleteSocialLink(id);
   }
 
+  // Availability
   @Post('availability')
-  @ApiOperation({ summary: 'Add availability slot' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Add an availability slot' })
   @ApiResponse({ status: 201, description: 'Returns the created availability slot' })
   async addAvailability(
-    @CurrentUser() user: any,
+    @Request() req: { user: { id: string } },
     @Body() data: CreateAvailabilityDto,
   ) {
-    const profile = await this.profileService.getProfile(user.id);
+    const profile = await this.profileService.getProfile(req.user.id);
     if (!profile) {
       throw new NotFoundException('Profile not found');
     }
@@ -83,7 +101,8 @@ export class ProfileController {
   }
 
   @Put('availability/:id')
-  @ApiOperation({ summary: 'Update availability slot' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update an availability slot' })
   @ApiResponse({ status: 200, description: 'Returns the updated availability slot' })
   async updateAvailability(
     @Param('id') id: string,
@@ -93,7 +112,8 @@ export class ProfileController {
   }
 
   @Delete('availability/:id')
-  @ApiOperation({ summary: 'Delete availability slot' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Delete an availability slot' })
   @ApiResponse({ status: 200, description: 'Returns the deleted availability slot' })
   async deleteAvailability(@Param('id') id: string) {
     return this.profileService.deleteAvailability(id);

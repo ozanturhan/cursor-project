@@ -1,113 +1,26 @@
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { Navigation } from './Navigation'
-import { UserMenu } from './UserMenu'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
+import { Navigation } from './Navigation';
+import { AuthButton } from './AuthButton';
 
-/**
- * Main header component that provides navigation and user-related actions.
- * Shows different content based on authentication state.
- * 
- * @component
- * @example
- * ```tsx
- * <Header />
- * ```
- */
-export function Header() {
-  const { data: session } = useSession()
-
+export async function Header() {
   return (
     <header className={cn(
-      // Layout
-      "w-full",
-      // Colors
-      "bg-white",
-      // Border
-      "border-b border-gray-200"
+      'sticky top-0 z-50 w-full',
+      'border-b border-neutral-200',
+      'bg-white/75 backdrop-blur-lg'
     )}>
-      <div className={cn(
-        // Layout
-        "container mx-auto",
-        // Spacing
-        "px-4"
-      )}>
-        <div className={cn(
-          // Layout
-          "flex items-center justify-between",
-          // Sizing
-          "h-16"
-        )}>
-          {/* Logo */}
-          <Link 
-            href="/" 
-            className={cn(
-              // Layout
-              "flex items-center",
-              // Spacing
-              "space-x-2"
-            )}
-          >
-            <span className={cn(
-              // Typography
-              "text-xl font-bold",
-              // Colors
-              "text-gray-900"
-            )}>
-              Consultation
-            </span>
-          </Link>
-
-          {/* Main Navigation */}
-          <Navigation />
-
-          {/* Auth Section */}
-          <div className={cn(
-            // Layout
-            "flex items-center",
-            // Spacing
-            "space-x-4"
-          )}>
-            {session ? (
-              <UserMenu user={session.user} />
-            ) : (
-              <div className={cn(
-                // Layout
-                "flex items-center",
-                // Spacing
-                "space-x-4"
-              )}>
-                <Link
-                  href="/auth/login"
-                  className={cn(
-                    // Colors & States
-                    "text-gray-600 hover:text-gray-900",
-                    // Transitions
-                    "transition-colors duration-200"
-                  )}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className={cn(
-                    // Base
-                    "px-4 py-2 rounded-md",
-                    // Colors
-                    "bg-primary-600 text-white",
-                    // States
-                    "hover:bg-primary-700",
-                    // Transitions
-                    "transition-colors duration-200"
-                  )}
-                >
-                  Register
-                </Link>
-              </div>
-            )}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-8">
+            <a href="/" className="text-xl font-bold text-neutral-900">
+              Logo
+            </a>
+            <Navigation />
           </div>
+          {/* @ts-expect-error Async Server Component */}
+          <AuthButton />
         </div>
       </div>
     </header>
-  )
+  );
 } 

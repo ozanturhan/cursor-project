@@ -1,15 +1,32 @@
 import axios from 'axios';
+import { getSession } from 'next-auth/react';
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// Add request interceptor for logging
+// Add request interceptor for authentication and logging
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // If Authorization header is already set (e.g., from server action), use that
+    if (config.headers.Authorization) {
+      return config;
+    }
+
+    // Otherwise, try to get the client-side session
+    try {
+      const session = await getSession();
+      if (session?.accessToken) {
+        config.headers.Authorization = `Bearer ${session.accessToken}`;
+      }
+    } catch (error) {
+      console.error('Failed to get session:', error);
+    }
+
     console.log('Axios Request:', {
       method: config.method,
       url: config.url,

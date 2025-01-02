@@ -17,26 +17,39 @@ export class AuthService {
     private emailService: EmailService,
   ) {}
 
-  async register(data: RegisterDto): Promise<User & { roles: any[] }> {
-    const existingUser = await this.prisma.user.findUnique({
+  async register(data: RegisterDto): Promise<User> {
+    // Check if email exists
+    const existingEmail = await this.prisma.user.findUnique({
       where: { email: data.email },
     });
 
-    if (existingUser) {
-      throw new ConflictException('Email already registered');
+    if (existingEmail) {
+      throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    const verificationToken = randomBytes(32).toString('hex');
-    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // Check if username exists
+    const existingUsername = await this.prisma.user.findUnique({
+      where: { username: data.username },
+    });
 
+    if (existingUsername) {
+      throw new ConflictException('Username already exists');
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(data.password, 10);
+
+    // Generate verification token
+    const verificationToken = randomBytes(32).toString('hex');
+
+    // Create user
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
-        passwordHash: hashedPassword,
+        username: data.username,
+        passwordHash,
         fullName: data.fullName,
         emailVerificationToken: verificationToken,
-        emailVerificationExpires: verificationExpires,
         roles: {
           create: {
             role: Role.CLIENT,
@@ -63,7 +76,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
       include: {
-        roles: true,
+        roles: true
       },
     });
 
@@ -197,12 +210,13 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(user: User) {
+  private async generateTokens(user: User & { roles: any[] }) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { 
           sub: user.id, 
           email: user.email,
+          username: user.username,
           jti: randomBytes(16).toString('hex')
         },
         { expiresIn: '15m' },
@@ -211,6 +225,7 @@ export class AuthService {
         { 
           sub: user.id, 
           email: user.email,
+          username: user.username,
           jti: randomBytes(16).toString('hex')
         },
         { expiresIn: '7d' },
@@ -221,5 +236,20 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async checkUsername(username: string): Promise<boolean> {
+    // Check if username is reserved
+    const reservedUsernames = ['admin', 'administrator', 'system', 'support'];
+    if (reservedUsernames.includes(username.toLowerCase())) {
+      return false;
+    }
+
+    // Check if username exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { username: username.toLowerCase() },
+    });
+
+    return !existingUser;
   }
 } 

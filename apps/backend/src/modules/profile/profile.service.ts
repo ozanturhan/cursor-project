@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Profile, SocialLink, Availability } from '@prisma/client';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CreateSocialLinkDto, UpdateSocialLinkDto } from './dto/social-link.dto';
+import { CreateAvailabilityDto, UpdateAvailabilityDto } from './dto/availability.dto';
 
 @Injectable()
 export class ProfileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getProfile(userId: string) {
     return this.prisma.profile.findFirst({
@@ -16,10 +18,11 @@ export class ProfileService {
     });
   }
 
-  async updateProfile(userId: string, data: Partial<Profile>) {
+  async updateProfile(userId: string, data: UpdateProfileDto) {
     const profile = await this.getProfile(userId);
+
     return this.prisma.profile.upsert({
-      where: { id: profile?.id ?? '' },
+      where: { id: profile?.id || '' },
       create: {
         userId,
         ...data,
@@ -32,7 +35,25 @@ export class ProfileService {
     });
   }
 
-  async addSocialLink(profileId: string, data: Omit<SocialLink, 'id' | 'profileId' | 'createdAt' | 'updatedAt'>) {
+  async getPublicProfile(userId: string) {
+    return this.prisma.profile.findFirst({
+      where: { userId },
+      include: {
+        socialLinks: true,
+        availabilities: true,
+        user: {
+          select: {
+            fullName: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    });
+  }
+
+  // Social Links
+  async addSocialLink(profileId: string, data: CreateSocialLinkDto) {
     return this.prisma.socialLink.create({
       data: {
         ...data,
@@ -41,7 +62,7 @@ export class ProfileService {
     });
   }
 
-  async updateSocialLink(id: string, data: Partial<SocialLink>) {
+  async updateSocialLink(id: string, data: UpdateSocialLinkDto) {
     const socialLink = await this.prisma.socialLink.findUnique({
       where: { id },
       include: { profile: true },
@@ -72,8 +93,9 @@ export class ProfileService {
     });
   }
 
-  async addAvailability(profileId: string, data: Omit<Availability, 'id' | 'profileId' | 'createdAt' | 'updatedAt'>) {
-    if (data.startHour >= data.endHour) {
+  // Availability
+  async addAvailability(profileId: string, data: CreateAvailabilityDto) {
+    if (data.endHour < data.startHour) {
       throw new BadRequestException('End time must be after start time');
     }
 
@@ -85,7 +107,7 @@ export class ProfileService {
     });
   }
 
-  async updateAvailability(id: string, data: Partial<Availability>) {
+  async updateAvailability(id: string, data: UpdateAvailabilityDto) {
     const availability = await this.prisma.availability.findUnique({
       where: { id },
       include: { profile: true },
@@ -98,7 +120,7 @@ export class ProfileService {
     const startHour = data.startHour ?? availability.startHour;
     const endHour = data.endHour ?? availability.endHour;
 
-    if (startHour >= endHour) {
+    if (endHour < startHour) {
       throw new BadRequestException('End time must be after start time');
     }
 
@@ -120,23 +142,6 @@ export class ProfileService {
 
     return this.prisma.availability.delete({
       where: { id },
-    });
-  }
-
-  async getPublicProfile(userId: string) {
-    return this.prisma.profile.findFirst({
-      where: { userId },
-      include: {
-        socialLinks: true,
-        availabilities: true,
-        user: {
-          select: {
-            fullName: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
     });
   }
 } 
