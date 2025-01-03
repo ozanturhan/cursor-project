@@ -1,7 +1,6 @@
 import { type Profile } from '@/types';
 import { ClientTabs } from './ClientTabs';
 import { type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 
 interface ProfileTabsProps {
   profile: Profile;
