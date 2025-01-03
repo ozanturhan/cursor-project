@@ -1,14 +1,11 @@
-import { getProfile } from '@/app/(main)/profile/[username]/actions/profile';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth/auth-provider';
 import { notFound } from 'next/navigation';
 import {
   ProfileHeader,
   ProfileTabs,
-  AvailabilityCalendar,
-  ClientTabs,
-  SocialLinks
 } from './_components';
+import { getProfile } from './_actions/profile';
 
 interface ProfilePageProps {
   params: {

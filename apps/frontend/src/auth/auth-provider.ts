@@ -1,8 +1,7 @@
+import { authApi } from '@/app/(auth)/auth/_shared/api/auth-api';
 import type { NextAuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { authApi } from '@/api/auth';
-import { log } from 'console';
 
 interface Credentials {
   email: string;
