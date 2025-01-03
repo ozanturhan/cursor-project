@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { getServerSession } from 'next-auth';
-import { Button } from '@/components/ui/Button';
 import { authOptions } from '@/auth/auth-provider';
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 export async function AuthButton() {
   const session = await getServerSession(authOptions);
@@ -9,14 +9,18 @@ export async function AuthButton() {
   if (session?.user?.username) {
     return (
       <Link href={`/profile/${session.user.username}`}>
-        <Button variant="ghost">Profile</Button>
+        <Button variant="outline" size="sm" className="rounded-full">
+          Profile
+        </Button>
       </Link>
     );
   }
 
   return (
     <Link href="/auth/login">
-      <Button variant="ghost">Sign in</Button>
+      <Button variant="primary" size="sm" className="rounded-full">
+        Login
+      </Button>
     </Link>
   );
 } 

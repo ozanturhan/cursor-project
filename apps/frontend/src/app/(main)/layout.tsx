@@ -7,9 +7,7 @@ export default function MainLayout({
 }) {
   return (
     <Layout>
-      <main className="flex-1">
-        {children}
-      </main>
+      {children}
     </Layout>
   );
 } 

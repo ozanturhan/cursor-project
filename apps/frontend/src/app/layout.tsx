@@ -1,13 +1,13 @@
-import { Layout } from '@/components/layout/Layout';
-import { Providers } from './providers';
-import { Geist } from 'next/font/google';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers';
 
-const geist = Geist({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Consultation Platform',
-  description: 'Connect with experts for personalized consultations',
+  description: 'Connect with professionals for expert consultations',
 };
 
 export default function RootLayout({
@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={geist.className}>
-      <body className="min-h-screen flex flex-col bg-neutral-100">
+    <html lang="en">
+      <body className={inter.className}>
         <Providers>
           {children}
         </Providers>
