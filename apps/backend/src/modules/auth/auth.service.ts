@@ -41,6 +41,7 @@ export class AuthService {
 
     // Generate verification token
     const verificationToken = randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Create user
     const user = await this.prisma.user.create({
@@ -50,6 +51,7 @@ export class AuthService {
         passwordHash,
         fullName: data.fullName,
         emailVerificationToken: verificationToken,
+        emailVerificationExpires: verificationExpires,
       },
     });
 
@@ -95,9 +97,6 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         emailVerificationToken: token,
-        emailVerificationExpires: {
-          gt: new Date(),
-        },
         emailVerified: null,
       },
     });
@@ -105,8 +104,8 @@ export class AuthService {
     console.log('User found during verification:', user ? user.id : 'No user found');
 
     if (!user) {
-      console.error('Invalid or expired verification token:', token);
-      throw new BadRequestException('Invalid or expired verification token');
+      console.error('Invalid verification token:', token);
+      throw new BadRequestException('Invalid verification token');
     }
 
     await this.prisma.user.update({

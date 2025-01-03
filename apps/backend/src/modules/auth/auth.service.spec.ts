@@ -188,7 +188,6 @@ describe('AuthService', () => {
 
       const call = mockPrismaService.user.findFirst.mock.calls[0][0];
       expect(call.where.emailVerificationToken).toBe('valid-token');
-      expect(call.where.emailVerificationExpires.gt).toBeInstanceOf(Date);
       expect(call.where.emailVerified).toBeNull();
 
       expect(mockPrismaService.user.update).toHaveBeenCalledWith({
@@ -205,7 +204,7 @@ describe('AuthService', () => {
       mockPrismaService.user.findFirst.mockResolvedValue(null);
 
       await expect(service.verifyEmail('invalid-token')).rejects.toThrow(
-        'Invalid or expired verification token'
+        'Invalid verification token'
       );
     });
   });
