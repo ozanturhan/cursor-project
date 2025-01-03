@@ -1,4 +1,4 @@
-import { getProfile } from '@/app/actions/profile';
+import { getProfile } from '@/app/(main)/profile/[username]/actions/profile';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth/auth-provider';
 import { notFound } from 'next/navigation';
@@ -28,7 +28,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = session?.user?.id === profile.id;
 
   return (
-    <div className="w-full sm:max-w-3xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       <div className="bg-white sm:rounded-xl shadow-sm sm:shadow-sm ring-1 ring-neutral-200 overflow-hidden">
         <ProfileHeader 
           profile={profile} 
