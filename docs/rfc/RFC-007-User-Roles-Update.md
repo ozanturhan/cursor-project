@@ -1,70 +1,65 @@
 # RFC-007: User Roles Update
 
 ## Status
-Implemented
+Superseded by CONVERSATION-010: The role-based system has been removed in favor of a more flexible approach where all users can act as both clients and professionals based on their profile and calendar settings.
 
 ## Summary
-This RFC describes the implementation of a flexible user roles system that allows users to have multiple roles simultaneously. This change enables users to act as both clients and professionals within the platform.
+This RFC originally described the implementation of a flexible user roles system that allowed users to have multiple roles simultaneously. However, this approach was later found to be unnecessarily complex, and the system was simplified to remove explicit roles entirely.
 
 ## Context and Problem Statement
-The initial design restricted users to a single role (either CLIENT or PROFESSIONAL). However, we recognized that users might want to both offer and seek services on the platform. This limitation does not reflect real-world use cases where a user might want to both provide and receive consultations.
+The initial design restricted users to a single role (either CLIENT or PROFESSIONAL). We then moved to a multiple-role system, but ultimately decided that no explicit roles were needed as the platform's functionality is better served by a profile-based approach where any user can both offer and seek services.
 
 ## Decision
-Implement a flexible role system that allows users to have multiple roles simultaneously, starting with CLIENT role by default and allowing the addition of the PROFESSIONAL role when needed.
+**Updated Decision**: Remove the role-based system entirely. User capabilities are now determined by:
+- Profile completion status
+- Calendar availability
+- Booking relationships
+
+This change simplifies the system and provides more natural flexibility for users to participate in both sides of the platform.
 
 ## Technical Details
 
 ### Database Changes
-- Removed `userType` field from User model
-- Added new `UserRole` model with fields:
-  - `id`: UUID
-  - `userId`: UUID (Foreign Key)
-  - `role`: Enum (CLIENT, PROFESSIONAL)
-  - `createdAt`: DateTime
-  - `updatedAt`: DateTime
+**Updated**: Removed Role enum and UserRole model entirely. The User model now connects directly to profiles and bookings without role-based restrictions.
 
 ### API Changes
-- Modified registration endpoint to automatically assign CLIENT role
-- Updated authentication responses to include user roles
-- Added JWT improvements:
+- Simplified registration endpoint (no role assignment)
+- Updated authentication responses to remove role information
+- JWT improvements remain:
   - Added `jti` (JWT ID) claim for unique tokens
   - Maintained 15-minute expiry for access tokens
   - Maintained 7-day expiry for refresh tokens
 
 ### Frontend Changes
 - Removed role selection from registration form
-- Updated user interface to handle multiple roles
-- Modified authentication state management to support multiple roles
+- Updated user interface to remove role-based elements
+- Modified authentication state management to remove role handling
 
 ## Security Considerations
 - All existing security measures remain in place
-- Role-based access control (RBAC) is maintained
+- Access control is now based on profile completion and calendar availability
 - JWT tokens include unique identifiers to prevent token reuse
 
 ## Testing
-- Updated E2E tests to verify role assignment
-- Added tests for token refresh functionality
-- Verified role-based access control
+- Updated E2E tests to remove role-related tests
+- Added tests for profile-based access control
+- Verified booking functionality works without roles
 
 ## Consequences
 ### Positive
-- Users have more flexibility in how they use the platform
-- Simplified registration process by removing role selection
-- Improved token security with unique identifiers
+- Simpler, more intuitive user experience
+- No artificial restrictions on user capabilities
+- Reduced complexity in codebase
 - Better alignment with real-world use cases
 
 ### Negative
-- Slightly more complex role management
-- Need to update existing role-based access control logic
+- Need to update existing documentation
+- Migration required for existing systems
 
 ## Implementation
-The changes have been implemented and tested, including:
-- Database schema updates
-- API endpoint modifications
-- Frontend component updates
-- E2E test coverage
+The original role-based implementation has been replaced with a simpler, profile-based system. See [CONVERSATION-010](../conversations/CONVERSATION-010-Remove-Role-System.md) for details of the new implementation.
 
 ## References
-- Related to RFC-002-Authentication
-- Related to RFC-003-NextAuth-Integration
-- [CONVERSATION-009: User Roles Update](../conversations/CONVERSATION-009-User-Roles-Update.md) 
+- [CONVERSATION-010: Remove Role System](../conversations/CONVERSATION-010-Remove-Role-System.md)
+- [RFC-010: User Profiles](RFC-010-User-Profiles.md)
+- [PRD: User Requirements & Personas](../PRD.md) 

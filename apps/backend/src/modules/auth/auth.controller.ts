@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Get, Query, UseGuards, Request, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, AuthResponseDto, VerifyEmailDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, AuthResponse, VerifyEmailDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -10,8 +10,6 @@ import { ConfigService } from '@nestjs/config';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  private latestVerificationToken: string | null = null;
-
   constructor(
     private readonly authService: AuthService,
     private readonly prismaService: PrismaService,
@@ -39,7 +37,7 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
-  @ApiResponse({ status: 201, description: 'User successfully logged in', type: AuthResponseDto })
+  @ApiResponse({ status: 201, description: 'User successfully logged in', type: AuthResponse })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async login(@Body() dto: LoginDto) {
@@ -77,36 +75,11 @@ export class AuthController {
 
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiResponse({ status: 201, description: 'Tokens successfully refreshed', type: AuthResponseDto })
+  @ApiResponse({ status: 201, description: 'Tokens successfully refreshed', type: AuthResponse })
   @ApiResponse({ status: 401, description: 'Unauthorized - invalid refresh token' })
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
-  }
-
-  @Get('debug/latest-verification-token')
-  @ApiOperation({ summary: 'Get the latest verification token (DEVELOPMENT ONLY)' })
-  @ApiResponse({ status: 200, description: 'Returns the latest verification token' })
-  async getLatestVerificationToken() {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new HttpException('Endpoint only available in development', HttpStatus.FORBIDDEN);
-    }
-
-    const latestUser = await this.prismaService.user.findFirst({
-      where: { emailVerificationToken: { not: null } },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!latestUser) {
-      throw new HttpException('No pending verification tokens found', HttpStatus.NOT_FOUND);
-    }
-
-    const verificationLink = `${this.configService.get('FRONTEND_URL')}/verify-email?token=${latestUser.emailVerificationToken}`;
-
-    return {
-      token: latestUser.emailVerificationToken,
-      verificationLink,
-    };
   }
 
   @Get('check-username/:username')

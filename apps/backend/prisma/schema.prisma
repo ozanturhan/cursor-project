@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  CLIENT
-  PROFESSIONAL
-}
-
 model User {
   id                     String    @id @default(uuid())
   email                  String    @unique
@@ -34,23 +29,10 @@ model User {
   updatedAt             DateTime   @updatedAt
 
   // Relations
-  roles                 UserRole[]
   profiles              Profile[]
   accounts              Account[]  // Keep this for future OAuth
   clientBookings        Booking[]  @relation("ClientBookings")
   professionalBookings  Booking[]  @relation("ProfessionalBookings")
-}
-
-model UserRole {
-  id        String   @id @default(uuid())
-  userId    String
-  role      Role     @default(CLIENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, role])
 }
 
 model Profile {

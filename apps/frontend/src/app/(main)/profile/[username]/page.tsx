@@ -2,8 +2,13 @@ import { getProfile } from '@/app/actions/profile';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth/auth-provider';
 import { notFound } from 'next/navigation';
-import { ProfileTabs } from './ProfileTabs';
-import { ProfileHeader } from './ProfileHeader';
+import {
+  ProfileHeader,
+  ProfileTabs,
+  AvailabilityCalendar,
+  ClientTabs,
+  SocialLinks
+} from './_components';
 
 interface ProfilePageProps {
   params: {

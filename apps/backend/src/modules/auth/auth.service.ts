@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { RegisterDto, LoginDto, AuthResponse } from './dto/auth.dto';
-import { Prisma, User, Role } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 
@@ -50,14 +50,6 @@ export class AuthService {
         passwordHash,
         fullName: data.fullName,
         emailVerificationToken: verificationToken,
-        roles: {
-          create: {
-            role: Role.CLIENT,
-          },
-        },
-      },
-      include: {
-        roles: true,
       },
     });
 
@@ -75,9 +67,6 @@ export class AuthService {
   async login(data: LoginDto): Promise<AuthResponse> {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
-      include: {
-        roles: true
-      },
     });
 
     if (!user || !user.passwordHash) {
@@ -191,9 +180,6 @@ export class AuthService {
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
-        include: {
-          roles: true,
-        },
       });
 
       if (!user) {
@@ -210,7 +196,7 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(user: User & { roles: any[] }) {
+  private async generateTokens(user: User) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { 

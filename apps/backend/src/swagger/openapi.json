@@ -70,7 +70,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
@@ -195,7 +195,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
@@ -205,21 +205,6 @@
           }
         },
         "summary": "Refresh access token",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/debug/latest-verification-token": {
-      "get": {
-        "operationId": "AuthController_getLatestVerificationToken",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Returns the latest verification token"
-          }
-        },
-        "summary": "Get the latest verification token (DEVELOPMENT ONLY)",
         "tags": [
           "auth"
         ]
@@ -517,21 +502,16 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string",
-            "example": "user@example.com"
+            "type": "string"
           },
           "username": {
-            "type": "string",
-            "example": "johndoe"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "example": "password123",
-            "minLength": 8
+            "type": "string"
           },
           "fullName": {
-            "type": "string",
-            "example": "John Doe"
+            "type": "string"
           }
         },
         "required": [
@@ -545,12 +525,10 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string",
-            "example": "user@example.com"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "example": "password123"
+            "type": "string"
           }
         },
         "required": [
@@ -558,62 +536,17 @@
           "password"
         ]
       },
-      "UserResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "email": {
-            "type": "string",
-            "example": "user@example.com"
-          },
-          "username": {
-            "type": "string",
-            "example": "johndoe"
-          },
-          "fullName": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "roles": {
-            "example": [
-              {
-                "id": "123",
-                "userId": "123",
-                "role": "CLIENT",
-                "createdAt": "2024-01-01T00:00:00.000Z",
-                "updatedAt": "2024-01-01T00:00:00.000Z"
-              }
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "username",
-          "fullName",
-          "roles"
-        ]
-      },
-      "AuthResponseDto": {
+      "AuthResponse": {
         "type": "object",
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/UserResponseDto"
+            "type": "object"
           },
           "accessToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            "type": "string"
           },
           "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            "type": "string"
           }
         },
         "required": [
@@ -626,8 +559,7 @@
         "type": "object",
         "properties": {
           "token": {
-            "type": "string",
-            "example": "verification-token-123"
+            "type": "string"
           }
         },
         "required": [
@@ -638,8 +570,7 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string",
-            "example": "user@example.com"
+            "type": "string"
           }
         },
         "required": [
@@ -650,9 +581,7 @@
         "type": "object",
         "properties": {
           "password": {
-            "type": "string",
-            "example": "newpassword123",
-            "minLength": 8
+            "type": "string"
           }
         },
         "required": [
@@ -663,8 +592,7 @@
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            "type": "string"
           }
         },
         "required": [

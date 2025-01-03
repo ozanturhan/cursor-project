@@ -1,0 +1,70 @@
+{
+  "sourceCode": {
+    "organization": {
+      "srcPath": "src",
+      "modulesPath": "src/modules",
+      "testPath": "test",
+      "prismaPath": "prisma"
+    },
+    "requiredFiles": [
+      ".env",
+      ".env.test",
+      "package.json",
+      "tsconfig.json",
+      "nest-cli.json"
+    ]
+  },
+  "testing": {
+    "pattern": "**/*.{spec,test,e2e-spec}.ts",
+    "config": {
+      "unit": "jest.config.js",
+      "e2e": "test/jest-e2e.config.js"
+    },
+    "coverage": {
+      "threshold": 80
+    }
+  },
+  "database": {
+    "schema": "prisma/schema.prisma",
+    "migrations": "prisma/migrations",
+    "seed": "prisma/seed.ts"
+  },
+  "api": {
+    "documentation": {
+      "swagger": "src/swagger",
+      "output": "openapi.json"
+    }
+  },
+  "moduleStructure": {
+    "requiredFiles": [
+      "*.controller.ts",
+      "*.service.ts",
+      "*.module.ts"
+    ],
+    "patterns": {
+      "dto": "**/*.dto.ts",
+      "entity": "**/*.entity.ts",
+      "guard": "**/*.guard.ts"
+    }
+  },
+  "codeQuality": {
+    "maxFileLines": 500,
+    "maxFunctionLines": 50,
+    "namingConvention": "kebab-case",
+    "strictTyping": true,
+    "requireTests": true
+  },
+  "validation": {
+    "validateEnv": true,
+    "validatePrisma": true,
+    "validateControllers": true,
+    "validateServices": true,
+    "validateDtos": true
+  },
+  "automation": {
+    "autoGenerateTypes": true,
+    "autoMigrateDb": false,
+    "autoUpdateDocs": true,
+    "blockOnTestFail": true
+  }
+} 

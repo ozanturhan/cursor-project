@@ -45,52 +45,42 @@ export default async function MainPage() {
               </p>
             </div>
 
-            <div className="mb-12">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-4">Your Active Roles</h2>
-              <div className="flex flex-wrap gap-2">
-                {userData.roles.map((role: any) => (
-                  <div
-                    key={role.id}
-                    className="px-4 py-2 bg-primary-50 border border-primary-200 text-primary-700 rounded-lg font-medium"
-                  >
-                    {role.role}
-                  </div>
-                ))}
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {userData.roles.some((r: any) => r.role === 'CLIENT') && (
-                <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-200 hover:border-primary-300 transition-colors">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-900 mb-2">Client Portal</h2>
-                    <p className="text-neutral-600">
-                      Schedule and manage your consultations with professionals
-                    </p>
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-neutral-900 mb-4">Your Profile</h2>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                      <p className="text-sm text-neutral-500">Name</p>
+                      <p className="text-neutral-900">{userData.fullName}</p>
+                    </div>
                   </div>
-                  <Link href="/client/dashboard" className="block">
-                    <Button variant="primary" fullWidth>
-                      Access Client Dashboard
-                    </Button>
-                  </Link>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                      <p className="text-sm text-neutral-500">Email</p>
+                      <p className="text-neutral-900">{userData.email}</p>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
 
-              {userData.roles.some((r: any) => r.role === 'PROFESSIONAL') && (
-                <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-200 hover:border-primary-300 transition-colors">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-900 mb-2">Professional Portal</h2>
-                    <p className="text-neutral-600">
-                      Manage your services, availability, and client appointments
-                    </p>
-                  </div>
-                  <Link href="/professional/dashboard" className="block">
-                    <Button variant="primary" fullWidth>
-                      Access Professional Dashboard
-                    </Button>
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-neutral-900 mb-4">Quick Actions</h2>
+                <div className="space-y-4">
+                  <Link
+                    href="/profile/edit"
+                    className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Edit Profile
+                  </Link>
+                  <Link
+                    href="/calendar"
+                    className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Manage Calendar
                   </Link>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

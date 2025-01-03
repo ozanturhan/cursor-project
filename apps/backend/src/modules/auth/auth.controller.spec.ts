@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { Role } from '@prisma/client';
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
@@ -23,7 +22,6 @@ describe('AuthController', () => {
     username: 'testuser',
     passwordHash: '$2b$10$test',
     fullName: 'Test User',
-    roles: [{ id: '1', userId: '1', role: Role.CLIENT, createdAt: new Date(), updatedAt: new Date() }],
     emailVerified: null,
     emailVerificationToken: 'verification-token',
     emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -93,7 +91,6 @@ describe('AuthController', () => {
       username: 'testuser',
       password: 'password123',
       fullName: 'Test User',
-      role: Role.CLIENT,
     };
 
     it('should register a new user', async () => {

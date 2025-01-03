@@ -1,0 +1,297 @@
+{
+  "sourceCode": {
+    "organization": {
+      "components": "src/components",
+      "pages": "src/app",
+      "lib": "src/lib",
+      "styles": "src/styles",
+      "types": "src/types",
+      "hooks": "src/hooks"
+    }
+  },
+  "libraries": {
+    "@headlessui/react": {
+      "required": true,
+      "usage": "For accessible UI components like dropdowns, modals, etc.",
+      "alternatives": "not allowed without team discussion"
+    },
+    "@heroicons/react": {
+      "required": true,
+      "usage": "For all icon needs in the application",
+      "alternatives": "not allowed without team discussion"
+    },
+    "clsx": {
+      "required": true,
+      "usage": "For class name construction",
+      "alternatives": "not allowed"
+    },
+    "tailwind-merge": {
+      "required": true,
+      "usage": "For merging Tailwind classes",
+      "alternatives": "not allowed"
+    }
+  },
+  "components": {
+    "naming": {
+      "pattern": "PascalCase",
+      "examples": ["Button", "UserMenu", "ProfileCard"]
+    },
+    "structure": {
+      "location": "src/components/[domain]/[ComponentName].tsx",
+      "exports": "named exports only",
+      "imports": "absolute imports with @/ alias"
+    },
+    "exports": {
+      "required": "Every component directory must have an index.ts file",
+      "rules": [
+        "Use named exports instead of default exports",
+        "Export all components through index.ts",
+        "Group related components in the same directory",
+        "Keep exports clean and alphabetically ordered"
+      ],
+      "pattern": "export { ComponentName } from './ComponentName'",
+      "examples": {
+        "singleComponent": [
+          "// components/Button/index.ts",
+          "export { Button } from './Button'"
+        ],
+        "multipleComponents": [
+          "// components/Form/index.ts",
+          "export { Form } from './Form'",
+          "export { FormField } from './FormField'",
+          "export { FormLabel } from './FormLabel'"
+        ]
+      }
+    },
+    "props": {
+      "naming": "camelCase",
+      "interface": "ComponentNameProps",
+      "required": ["proper TypeScript types", "JSDoc comments for complex props"]
+    }
+  },
+  "hooks": {
+    "useEffect": {
+      "avoid": true,
+      "allowedCases": [
+        "data fetching (when not possible with React Query or similar)",
+        "managing subscriptions/event listeners",
+        "integrating with non-React libraries",
+        "managing focus/scroll position"
+      ],
+      "alternatives": {
+        "urlParams": "use server components or router events",
+        "dataFetching": "use React Query or SWR",
+        "formHandling": "use react-hook-form or similar",
+        "stateUpdates": "use event handlers or state management libraries",
+        "apiCalls": "use React Query mutations or similar"
+      }
+    }
+  },
+  "serverComponents": {
+    "searchParams": {
+      "rules": [
+        "Server components using searchParams must be async",
+        "Always await searchParams and destructure values",
+        "Use pattern: const { param1, param2 } = await searchParams"
+      ],
+      "example": "export default async function Page({ searchParams }) {\n  const { value } = await searchParams;\n}"
+    }
+  },
+  "dataFetching": {
+    "rules": [
+      "Always use Axios instead of fetch",
+      "Use React Query for data fetching and caching",
+      "Use React Query mutations for data mutations",
+      "Configure Axios instance with base URL and interceptors",
+      "Handle errors globally through Axios interceptors"
+    ],
+    "avoid": [
+      "Direct fetch calls",
+      "Manual loading/error states",
+      "Direct API calls without React Query"
+    ],
+    "examples": {
+      "query": "const { data, isLoading } = useQuery(['key'], () => api.get('/endpoint'))",
+      "mutation": "const { mutate } = useMutation((data) => api.post('/endpoint', data))",
+      "axios": "import { api } from '@/lib/axios';"
+    }
+  },
+  "styling": {
+    "approach": "Tailwind CSS utility classes",
+    "className": {
+      "merging": "use cn() utility",
+      "ordering": ["layout", "spacing", "typography", "colors", "states"]
+    },
+    "responsive": {
+      "approach": "mobile-first",
+      "breakpoints": ["sm", "md", "lg", "xl", "2xl"]
+    },
+    "darkMode": {
+      "support": "required for all components",
+      "implementation": "use dark: variant"
+    }
+  },
+  "icons": {
+    "source": "@heroicons/react only",
+    "sizing": {
+      "default": "20/solid for general UI",
+      "navigation": "24/outline for navigation",
+      "mini": "20/solid for compact UI"
+    },
+    "naming": {
+      "pattern": "IconName + 'Icon'",
+      "example": "ChevronDownIcon"
+    }
+  },
+  "classNames": {
+    "merging": {
+      "utility": "cn() from @/lib/utils",
+      "pattern": "cn('base-classes', conditional && 'conditional-classes')"
+    },
+    "organization": {
+      "order": [
+        "layout classes",
+        "spacing classes",
+        "typography classes",
+        "color classes",
+        "state classes"
+      ]
+    }
+  },
+  "documentation": {
+    "required": [
+      "component description",
+      "props documentation",
+      "usage examples",
+      "accessibility notes"
+    ],
+    "format": "TSDoc/JSDoc style comments",
+    "location": "above component definition"
+  },
+  "performance": {
+    "imports": {
+      "icons": "import individual icons, no bulk imports",
+      "components": "use dynamic imports for large components"
+    },
+    "rendering": {
+      "optimization": [
+        "use memo for expensive computations",
+        "avoid unnecessary re-renders",
+        "lazy load off-screen content"
+      ]
+    }
+  },
+  "routing": {
+    "structure": {
+      "app": "src/app",
+      "layouts": "src/app/**/layout.tsx",
+      "pages": "src/app/**/page.tsx",
+      "loading": "src/app/**/loading.tsx",
+      "error": "src/app/**/error.tsx"
+    },
+    "naming": {
+      "pattern": "kebab-case for folders",
+      "dynamic": "[param] for dynamic segments"
+    },
+    "pageOrganization": {
+      "structure": {
+        "pageRoot": "page.tsx should be the only component directly in the page directory",
+        "directories": {
+          "_components": "Page-specific UI components",
+          "_hooks": "Page-specific custom hooks",
+          "_api": "Page-specific API clients and data fetching",
+          "_utils": "Page-specific utility functions",
+          "_types": "Page-specific TypeScript types and interfaces",
+          "_constants": "Page-specific constants and configuration"
+        },
+        "featureRoot": {
+          "description": "For multi-page features (e.g., auth with login, register pages)",
+          "sharedDirectories": {
+            "_shared": {
+              "description": "Root directory for shared code within the feature",
+              "structure": {
+                "api": "Shared API clients",
+                "hooks": "Shared hooks",
+                "types": "Shared types",
+                "utils": "Shared utilities",
+                "components": "Shared components",
+                "constants": "Shared constants"
+              }
+            }
+          },
+          "pageDirectories": {
+            "_components": "Page-specific components only",
+            "_hooks": "Page-specific hooks only",
+            "_api": "Page-specific API calls only"
+          }
+        }
+      },
+      "example": {
+        "multiPageFeature": {
+          "path": "src/app/auth",
+          "structure": [
+            "_shared/",
+            "_shared/api/auth-api.ts",
+            "_shared/api/index.ts",
+            "_shared/hooks/use-auth.ts",
+            "_shared/hooks/index.ts",
+            "_shared/types/auth-types.ts",
+            "_shared/types/index.ts",
+            "login/",
+            "login/_components/",
+            "login/_components/LoginForm.tsx",
+            "login/_components/index.ts",
+            "login/page.tsx",
+            "register/",
+            "register/_components/",
+            "register/_components/RegisterForm.tsx",
+            "register/_components/index.ts",
+            "register/page.tsx"
+          ]
+        }
+      },
+      "rules": [
+        "Keep page.tsx focused on layout and data fetching",
+        "Every directory must have an index.ts file for exports",
+        "Use _shared directory at feature root for code shared between pages",
+        "Keep page-specific code in respective page directories",
+        "Use named exports consistently across all files",
+        "Keep directory structure flat within each directory",
+        "Each directory should focus on a single responsibility"
+      ],
+      "exports": {
+        "pattern": "Always use index.ts for exports",
+        "examples": {
+          "_shared/api": "export { authApi } from './auth-api'",
+          "_shared/hooks": "export { useAuth } from './use-auth'",
+          "login/_components": "export { LoginForm } from './LoginForm'"
+        }
+      }
+    }
+  },
+  "stateManagement": {
+    "local": "use React.useState",
+    "shared": "use Zustand for global state",
+    "server": "use React Query for server state",
+    "forms": "use react-hook-form"
+  },
+  "testing": {
+    "framework": "Jest + React Testing Library",
+    "coverage": "minimum 80%",
+    "requirements": [
+      "basic rendering",
+      "prop variations",
+      "user interactions",
+      "accessibility"
+    ]
+  },
+  "accessibility": {
+    "compliance": "WCAG 2.1 AA",
+    "requirements": [
+      "proper ARIA attributes",
+      "keyboard navigation",
+      "screen reader support",
+      "sufficient color contrast"
+    ]
+  }
+} 

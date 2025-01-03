@@ -4,7 +4,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
-import { Role } from '@prisma/client';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -27,7 +26,6 @@ describe('AuthService', () => {
     image: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    roles: [{ role: Role.CLIENT }],
   };
 
   const mockPrismaService = {
@@ -91,7 +89,6 @@ describe('AuthService', () => {
       username: 'testuser',
       password: 'password123',
       fullName: 'Test User',
-      role: Role.CLIENT,
     };
 
     it('should register a new user', async () => {
@@ -108,11 +105,6 @@ describe('AuthService', () => {
             email: registerData.email,
             username: registerData.username,
             fullName: registerData.fullName,
-            roles: {
-              create: {
-                role: Role.CLIENT,
-              },
-            },
           }),
         }),
       );

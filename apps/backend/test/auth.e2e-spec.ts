@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { Role } from '@prisma/client';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -17,7 +16,6 @@ describe('AuthController (e2e)', () => {
       password: 'Password123!',
       username: `testuser${Date.now()}${testUserIndex}`,
       fullName: `Test User ${testUserIndex}`,
-      role: Role.CLIENT,
     };
   };
 
@@ -34,7 +32,6 @@ describe('AuthController (e2e)', () => {
   beforeEach(async () => {
     // Clean up database before each test
     try {
-      await prisma.userRole.deleteMany({});
       await prisma.profile.deleteMany({});
       await prisma.user.deleteMany({});
       testUserIndex = 0;
@@ -45,7 +42,6 @@ describe('AuthController (e2e)', () => {
 
   afterAll(async () => {
     try {
-      await prisma.userRole.deleteMany({});
       await prisma.profile.deleteMany({});
       await prisma.user.deleteMany({});
       await prisma.$disconnect();
@@ -69,8 +65,6 @@ describe('AuthController (e2e)', () => {
       expect(registerResponse.body).toHaveProperty('email', testUser.email);
       expect(registerResponse.body).toHaveProperty('username', testUser.username);
       expect(registerResponse.body).toHaveProperty('fullName', testUser.fullName);
-      expect(registerResponse.body).toHaveProperty('roles');
-      expect(Array.isArray(registerResponse.body.roles)).toBe(true);
 
       // Get user and verification token
       const user = await prisma.user.findUnique({
@@ -178,7 +172,6 @@ describe('AuthController (e2e)', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('email', testUser.email);
-      expect(response.body.roles).toHaveLength(1);
     });
 
     it('should handle password reset flow', async () => {

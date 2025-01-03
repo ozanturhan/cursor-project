@@ -1,0 +1,66 @@
+{
+  "rulesPrecedence": {
+    "order": [
+      "app-specific rules in apps/*/cursorrules.json take precedence over root rules",
+      "root rules apply when no app-specific rule exists"
+    ],
+    "requirements": [
+      "Always check app-specific rules in the relevant app directory first",
+      "Check both frontend and backend rules when making changes that affect both",
+      "Root rules serve as fallback and for project-wide concerns"
+    ],
+    "appRules": {
+      "frontend": "apps/frontend/.cursorrules.json",
+      "backend": "apps/backend/.cursorrules.json"
+    }
+  },
+  "documentation": {
+    "paths": {
+      "workflow": "docs/DEVELOPMENT_WORKFLOW.md",
+      "rfc": "docs/rfc",
+      "progress": "docs/progress/PROGRESS_TRACKER.md",
+      "prd": "docs/PRD.md",
+      "conversations": "docs/conversations",
+      "apiDocs": "apps/backend/swagger"
+    },
+    "validation": {
+      "validatePaths": true,
+      "requiredPaths": [
+        "docs/DEVELOPMENT_WORKFLOW.md",
+        "docs/rfc",
+        "docs/progress/PROGRESS_TRACKER.md",
+        "docs/PRD.md",
+        "docs/conversations",
+        "apps/backend/swagger"
+      ]
+    }
+  },
+  "filePatterns": {
+    "test": "**/*.{spec,test}.{ts,tsx}",
+    "env": ".env*",
+    "ignore": ["node_modules", "dist", ".next", "coverage"]
+  },
+  "automation": {
+    "autoFormat": true,
+    "autoLint": true,
+    "testOnCommit": true,
+    "blockOnError": true
+  },
+  "monorepo": {
+    "useTurborepo": true,
+    "preferredPackageManager": "yarn",
+    "turboTasks": {
+      "dev": "turbo run dev --filter=",
+      "build": "turbo run build --filter=",
+      "test": "turbo run test --filter=",
+      "lint": "turbo run lint --filter=",
+      "db:generate": "turbo run db:generate --filter=",
+      "db:push": "turbo run db:push --filter="
+    }
+  },
+  "testing": {
+    "coverage": {
+      "threshold": 80
+    }
+  }
+} 
