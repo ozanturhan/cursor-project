@@ -18,6 +18,7 @@ Start Date: 2024-12-30
     - [x] Next-Auth setup
     - [x] Custom provider implementation
     - [x] Protected routes
+    - [x] Public routes configuration
     - [x] Session handling
     - [x] Email verification flow
   - [x] Security measures
@@ -30,6 +31,7 @@ Start Date: 2024-12-30
     - [x] Email verification
     - [x] Login with JWT
     - [x] Protected routes
+    - [x] Public routes access
     - [x] Refresh token flow
   - [ ] Additional Authentication Features
     - [ ] Password reset functionality
@@ -61,6 +63,7 @@ Start Date: 2024-12-30
   - [x] Profile service implementation
   - [x] Social links management
   - [x] Availability management
+  - [x] Public profile access
   - [x] API endpoints
   - [x] Unit tests
   - [x] E2E tests
@@ -68,9 +71,9 @@ Start Date: 2024-12-30
 - [ ] Profile Module Frontend
   - [ ] Profile management page
   - [ ] Profile editing form
+  - [x] Public profile view
   - [ ] Social links management
   - [ ] Availability calendar
-  - [ ] Public profile view
 
 ### Next Steps
 1. Implement password reset functionality
@@ -109,6 +112,10 @@ Start Date: 2024-12-30
 - Added E2E tests for profile management
 - Implemented social links and availability management APIs
 - Integrated profile system with authentication
+- 2024-01-03: Implemented public access to profile pages
+- 2024-01-03: Updated middleware to allow unauthenticated profile access
+- 2024-01-03: Updated documentation for public profile access
+- 2024-01-03: Removed role-based system
 
 ## Current Blockers
 None

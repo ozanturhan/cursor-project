@@ -272,12 +272,12 @@
         ]
       }
     },
-    "/profile/{userId}": {
+    "/profile/{username}": {
       "get": {
         "operationId": "ProfileController_getPublicProfile",
         "parameters": [
           {
-            "name": "userId",
+            "name": "username",
             "required": true,
             "in": "path",
             "schema": {
@@ -288,9 +288,12 @@
         "responses": {
           "200": {
             "description": "Returns the public profile"
+          },
+          "404": {
+            "description": "Profile not found"
           }
         },
-        "summary": "Get public profile by user ID",
+        "summary": "Get public profile by username",
         "tags": [
           "profile"
         ]

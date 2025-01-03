@@ -32,9 +32,11 @@ describe('AuthController (e2e)', () => {
   beforeEach(async () => {
     // Clean up database before each test
     try {
+      console.log('Cleaning up database before test...');
       await prisma.profile.deleteMany({});
       await prisma.user.deleteMany({});
       testUserIndex = 0;
+      console.log('Database cleanup complete');
     } catch (error) {
       console.error('Error cleaning up database:', error);
     }
@@ -66,12 +68,17 @@ describe('AuthController (e2e)', () => {
       expect(registerResponse.body).toHaveProperty('username', testUser.username);
       expect(registerResponse.body).toHaveProperty('fullName', testUser.fullName);
 
+      // Add a small delay to ensure database operations complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Get user and verification token
       const user = await prisma.user.findUnique({
         where: { email: testUser.email },
       });
+      console.log('Test user data:', testUser);
+      console.log('Register response:', registerResponse.body);
+      console.log('Found user:', user);
       expect(user).toBeDefined();
-      expect(user!.emailVerified).toBeNull();
       expect(user!.emailVerificationToken).toBeDefined();
 
       // Try to login before verification

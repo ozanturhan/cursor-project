@@ -68,7 +68,7 @@ export default async function MainPage() {
                 <h2 className="text-xl font-semibold text-neutral-900 mb-4">Quick Actions</h2>
                 <div className="space-y-4">
                   <Link
-                    href="/profile/edit"
+                    href={`/profile/${userData.username}`}
                     className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
                   >
                     Edit Profile

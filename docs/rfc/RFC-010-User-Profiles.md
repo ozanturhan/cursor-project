@@ -9,12 +9,22 @@
 - [ ] Tested (Frontend)
 
 ## Summary
-This RFC proposes the implementation of user profiles in the consultation platform, allowing users to manage their personal information, bio, social media links, and availability for consultations.
+This RFC proposes the implementation of user profiles in the consultation platform, allowing users to manage their personal information, bio, social media links, and availability for consultations. Profile pages are publicly accessible to all users, while editing capabilities are restricted to profile owners.
 
 ## Background
-Users need a way to present themselves professionally and manage their availability for consultations. This includes both clients who want to share their background and professionals who need to showcase their expertise and manage their consultation schedule.
+Users need a way to present themselves professionally and manage their availability for consultations. This includes both clients who want to share their background and professionals who need to showcase their expertise and manage their consultation schedule. Public accessibility of profiles enables better discovery and transparency.
 
 ## Detailed Design
+
+### Profile Access Levels
+- Public Access
+  - Anyone can view profile pages without authentication
+  - Profile information, bio, and social links are publicly visible
+  - Availability calendar is publicly viewable
+- Authenticated Access
+  - Profile owners can edit their own profiles
+  - Edit button only appears for profile owners
+  - Profile management features require authentication
 
 ### Profile Information
 - Basic Information

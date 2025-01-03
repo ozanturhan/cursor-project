@@ -10,9 +10,22 @@
 This RFC outlines the authentication system implementation for the consultation platform, including user registration, login, email verification, token refresh, and password reset functionality.
 
 ## Background
-The platform requires a secure and robust authentication system to manage user access and protect sensitive information.
+The platform requires a secure and robust authentication system to manage user access and protect sensitive information, while still maintaining public accessibility for certain features.
 
 ## Detailed Design
+
+### Route Access Levels
+1. Public Routes (No Authentication Required)
+   - Authentication pages (/auth/*)
+   - Profile pages (/profile/*)
+   - Landing pages
+   - Public documentation
+
+2. Protected Routes (Authentication Required)
+   - Profile management
+   - Account settings
+   - Booking system
+   - Consultation features
 
 ### Authentication Flow
 1. Registration

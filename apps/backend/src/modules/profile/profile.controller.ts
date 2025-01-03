@@ -41,12 +41,16 @@ export class ProfileController {
     return this.profileService.updateProfile(req.user.id, data);
   }
 
-  @Get(':userId')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get public profile by user ID' })
+  @Get(':username')
+  @ApiOperation({ summary: 'Get public profile by username' })
   @ApiResponse({ status: 200, description: 'Returns the public profile' })
-  async getPublicProfile(@Param('userId') userId: string) {
-    return this.profileService.getPublicProfile(userId);
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  async getPublicProfile(@Param('username') username: string) {
+    const profile = await this.profileService.getPublicProfileByUsername(username);
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
+    return profile;
   }
 
   // Social Links

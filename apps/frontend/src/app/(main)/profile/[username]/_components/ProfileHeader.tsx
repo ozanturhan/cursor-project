@@ -1,69 +1,56 @@
-import { type Profile } from '@/types';
+import { Session } from 'next-auth';
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 import Image from 'next/image';
-import { type Session } from 'next-auth';
 
 interface ProfileHeaderProps {
-  profile: Profile;
+  profile: {
+    id: string;
+    username: string;
+    fullName: string;
+    image?: string | null;
+  };
   isOwnProfile: boolean;
   session: Session | null;
 }
 
 export function ProfileHeader({ profile, isOwnProfile, session }: ProfileHeaderProps) {
   return (
-    <div>
-      {/* Cover Image */}
-      <div className="h-32 bg-primary-500" />
-
-      {/* Profile Info Container */}
-      <div className="px-3 sm:px-6">
-        {/* Avatar */}
-        <div className="relative -mt-16 mb-3">
-          <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
-            {profile.image ? (
-              <Image
-                src={profile.image}
-                alt={session?.user?.name || profile.username}
-                width={128}
-                height={128}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center bg-neutral-100 text-neutral-500">
-                <svg
-                  className="h-14 w-14 sm:h-16 sm:w-16"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
+    <div className="p-6 border-b border-neutral-200">
+      <div className="flex items-center gap-4">
+        <div className="relative h-20 w-20 rounded-full overflow-hidden bg-neutral-100">
+          {profile.image ? (
+            <Image
+              src={profile.image}
+              alt={profile.fullName}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-neutral-400">
+              <svg className="h-12 w-12" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          )}
         </div>
 
-        {/* Profile Info */}
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h1 className="text-xl font-bold text-neutral-900">
-              {session?.user?.name}
-            </h1>
-            <p className="text-sm text-neutral-500">@{session?.user?.username || profile.username}</p>
-          </div>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-neutral-900">{profile.fullName}</h1>
+          <p className="text-neutral-500">@{profile.username}</p>
+        </div>
 
-          {isOwnProfile && (
-            <button
-              type="button"
-              className="px-4 py-1.5 border border-neutral-300 rounded-full text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50"
-            >
-              Edit profile
-            </button>
+        <div className="flex gap-2">
+          {isOwnProfile ? (
+            <Link href="/profile/edit">
+              <Button variant="outline">Edit Profile</Button>
+            </Link>
+          ) : session ? (
+            <Button variant="primary">Schedule Meeting</Button>
+          ) : (
+            <Link href="/auth/login">
+              <Button variant="primary">Login to Schedule</Button>
+            </Link>
           )}
         </div>
       </div>

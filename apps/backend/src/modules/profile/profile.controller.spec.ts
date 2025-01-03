@@ -47,7 +47,7 @@ describe('ProfileController', () => {
   const mockProfileService = {
     getProfile: jest.fn(),
     updateProfile: jest.fn(),
-    getPublicProfile: jest.fn(),
+    getPublicProfileByUsername: jest.fn(),
     addSocialLink: jest.fn(),
     updateSocialLink: jest.fn(),
     deleteSocialLink: jest.fn(),
@@ -116,31 +116,29 @@ describe('ProfileController', () => {
   });
 
   describe('getPublicProfile', () => {
-    it('should return public profile', async () => {
-      const mockPublicProfile = {
-        ...mockProfile,
-        socialLinks: [mockSocialLink],
-        availabilities: [mockAvailability],
-        user: {
-          fullName: 'Test User',
-          email: 'test@example.com',
-          image: null,
+    it('should return public profile when found', async () => {
+      const mockProfile = {
+        id: '1',
+        username: 'testuser',
+        fullName: 'Test User',
+        profile: {
+          bio: 'Test bio',
         },
       };
-      mockProfileService.getPublicProfile.mockResolvedValue(mockPublicProfile);
 
-      const result = await controller.getPublicProfile('user-1');
+      mockProfileService.getPublicProfileByUsername.mockResolvedValue(mockProfile);
 
-      expect(result).toBe(mockPublicProfile);
-      expect(service.getPublicProfile).toHaveBeenCalledWith('user-1');
+      const result = await controller.getPublicProfile('testuser');
+      expect(result).toBe(mockProfile);
+      expect(service.getPublicProfileByUsername).toHaveBeenCalledWith('testuser');
     });
 
-    it('should return null if profile not found', async () => {
-      mockProfileService.getPublicProfile.mockResolvedValue(null);
+    it('should throw NotFoundException when profile not found', async () => {
+      mockProfileService.getPublicProfileByUsername.mockResolvedValue(null);
 
-      const result = await controller.getPublicProfile('user-1');
-
-      expect(result).toBeNull();
+      await expect(controller.getPublicProfile('nonexistent'))
+        .rejects
+        .toThrow(NotFoundException);
     });
   });
 

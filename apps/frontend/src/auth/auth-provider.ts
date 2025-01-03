@@ -28,7 +28,6 @@ export const authOptions: NextAuthOptions = {
             password: credentials.password,
           });
           
-          console.log('auth', JSON.stringify(auth, null, 2));
           return {
             id: auth.user.id,
             email: auth.user.email,
@@ -58,7 +57,6 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }: { token: JWT; user: any; account: any }) {
       // Initial sign in
       if (account && user) {
-        console.log('initial sign in: user', user);
         return {
           ...token,
           accessToken: user.accessToken,
@@ -69,7 +67,6 @@ export const authOptions: NextAuthOptions = {
         };
       }
 
-      console.log('token', token);
       // Return token if it's still valid
       if (Date.now() < token.accessTokenExpires) {
         return token;
@@ -77,7 +74,6 @@ export const authOptions: NextAuthOptions = {
 
       // Refresh token
       try {
-        console.log('refreshing token');
         const auth = await authApi.refreshToken(token.refreshToken);
 
         return {
