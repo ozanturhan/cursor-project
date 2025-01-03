@@ -18,6 +18,7 @@ interface ProfilePageProps {
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const profile = await getProfile();
+  console.log("profile", profile);
   const session = await getServerSession(authOptions);
 
   if (!profile) {
