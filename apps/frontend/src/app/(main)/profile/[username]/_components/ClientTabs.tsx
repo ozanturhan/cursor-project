@@ -23,14 +23,14 @@ const tabClassName = ({ selected }: { selected: boolean }) =>
 export function ClientTabs({ tabs }: ClientTabsProps) {
   return (
     <Tab.Group>
-      <Tab.List className="flex space-x-1 border-b border-neutral-200">
+      <Tab.List className="flex space-x-1 border-b border-neutral-200 overflow-x-auto">
         {tabs.map((tab) => (
           <Tab key={tab.label} className={tabClassName}>
             {tab.label}
           </Tab>
         ))}
       </Tab.List>
-      <Tab.Panels className="p-4 sm:p-6 lg:p-8">
+      <Tab.Panels className="p-4 sm:p-6">
         {tabs.map((tab) => (
           <Tab.Panel key={tab.label}>{tab.content}</Tab.Panel>
         ))}

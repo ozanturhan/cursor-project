@@ -41,7 +41,7 @@ export function Footer() {
     )}>
       <div className={cn(
         // Layout
-        "container mx-auto",
+        "container mx-auto max-w-5xl",
         // Spacing
         "px-4 py-12"
       )}>

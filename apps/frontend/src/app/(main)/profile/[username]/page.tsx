@@ -28,8 +28,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = session?.user?.id === profile.id;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white sm:rounded-xl sm:shadow-sm sm:ring-1 sm:ring-neutral-200">
+    <div className="w-full sm:max-w-3xl mx-auto">
+      <div className="bg-white sm:rounded-xl shadow-sm sm:shadow-sm ring-1 ring-neutral-200 overflow-hidden">
         <ProfileHeader 
           profile={profile} 
           isOwnProfile={isOwnProfile} 
