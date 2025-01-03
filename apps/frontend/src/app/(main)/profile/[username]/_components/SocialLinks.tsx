@@ -1,4 +1,5 @@
 import { type Profile } from '@/types';
+import { cn } from '@/lib/utils';
 
 const socialIcons = {
   github: (
@@ -47,7 +48,12 @@ export function SocialLinks({ profile }: SocialLinksProps) {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-600 hover:text-primary-500 p-1.5"
+              className={cn(
+                "p-1.5",
+                "text-muted dark:text-muted-dark",
+                "hover:text-foreground dark:hover:text-foreground-dark",
+                "transition-colors duration-200"
+              )}
               title={link.platform}
             >
               {socialIcons[link.platform.toLowerCase() as keyof typeof socialIcons] || (

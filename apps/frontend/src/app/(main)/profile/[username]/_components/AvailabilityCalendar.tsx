@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 interface Availability {
   id: string;
@@ -27,7 +28,7 @@ export function AvailabilityCalendar({ availabilities, isOwnProfile }: Availabil
   if (availabilities.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-neutral-600 mb-4">No availability slots set yet.</p>
+        <p className="text-muted dark:text-muted-dark mb-4">No availability slots set yet.</p>
         {isOwnProfile && (
           <Link href="/profile/edit">
             <Button variant="secondary">Set Availability</Button>
@@ -46,11 +47,11 @@ export function AvailabilityCalendar({ availabilities, isOwnProfile }: Availabil
         {sortedAvailabilities.map((slot) => (
           <div
             key={slot.id}
-            className="p-4 rounded-lg bg-neutral-100 flex items-center justify-between"
+            className="p-4 rounded-lg bg-muted/10 dark:bg-muted-dark/10 flex items-center justify-between"
           >
             <div>
-              <div className="font-medium text-neutral-900">{DAYS[slot.dayOfWeek]}</div>
-              <div className="text-neutral-600">
+              <div className="font-medium text-foreground dark:text-foreground-dark">{DAYS[slot.dayOfWeek]}</div>
+              <div className="text-muted dark:text-muted-dark">
                 {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
               </div>
             </div>

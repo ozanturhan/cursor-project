@@ -10,7 +10,7 @@ interface LayoutProps {
 
 export async function Layout({ children, showHeader = true, showFooter = true }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-100">
+    <div className="min-h-screen flex flex-col bg-page dark:bg-page-dark">
       {showHeader && (
         <Header />
       )}

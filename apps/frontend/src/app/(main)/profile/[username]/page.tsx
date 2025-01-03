@@ -29,7 +29,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-white sm:rounded-xl shadow-sm sm:shadow-sm ring-1 ring-neutral-200 overflow-hidden">
+      <div className="bg-card dark:bg-card-dark sm:rounded-xl shadow-sm sm:shadow-sm ring-1 ring-border dark:ring-border-dark overflow-hidden">
         <ProfileHeader 
           profile={profile} 
           isOwnProfile={isOwnProfile} 

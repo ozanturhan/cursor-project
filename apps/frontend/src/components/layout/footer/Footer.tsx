@@ -35,9 +35,9 @@ export function Footer() {
   return (
     <footer className={cn(
       // Colors
-      "bg-gray-50",
+      "bg-background dark:bg-background-dark",
       // Border
-      "border-t border-gray-200"
+      "border-t border-border dark:border-border-dark"
     )}>
       <div className={cn(
         // Layout
@@ -57,7 +57,7 @@ export function Footer() {
               // Typography
               "text-lg font-semibold",
               // Colors
-              "text-gray-900"
+              "text-foreground dark:text-foreground-dark"
             )}>
               Consultation
             </h3>
@@ -67,7 +67,7 @@ export function Footer() {
               // Typography
               "text-sm",
               // Colors
-              "text-gray-600"
+              "text-muted dark:text-muted-dark"
             )}>
               Connect with professionals for expert consultations.
             </p>
@@ -79,7 +79,7 @@ export function Footer() {
               // Typography
               "text-sm font-semibold uppercase tracking-wider",
               // Colors
-              "text-gray-900"
+              "text-foreground dark:text-foreground-dark"
             )}>
               Company
             </h3>
@@ -95,7 +95,7 @@ export function Footer() {
                       // Typography
                       "text-sm",
                       // Colors & States
-                      "text-gray-600 hover:text-gray-900",
+                      "text-muted dark:text-muted-dark hover:text-foreground dark:hover:text-foreground-dark",
                       // Transitions
                       "transition-colors duration-200"
                     )}
@@ -113,7 +113,7 @@ export function Footer() {
               // Typography
               "text-sm font-semibold uppercase tracking-wider",
               // Colors
-              "text-gray-900"
+              "text-foreground dark:text-foreground-dark"
             )}>
               Resources
             </h3>
@@ -129,7 +129,7 @@ export function Footer() {
                       // Typography
                       "text-sm",
                       // Colors & States
-                      "text-gray-600 hover:text-gray-900",
+                      "text-muted dark:text-muted-dark hover:text-foreground dark:hover:text-foreground-dark",
                       // Transitions
                       "transition-colors duration-200"
                     )}
@@ -147,7 +147,7 @@ export function Footer() {
               // Typography
               "text-sm font-semibold uppercase tracking-wider",
               // Colors
-              "text-gray-900"
+              "text-foreground dark:text-foreground-dark"
             )}>
               Follow Us
             </h3>
@@ -165,7 +165,7 @@ export function Footer() {
                       // Typography
                       "text-sm",
                       // Colors & States
-                      "text-gray-600 hover:text-gray-900",
+                      "text-muted dark:text-muted-dark hover:text-foreground dark:hover:text-foreground-dark",
                       // Transitions
                       "transition-colors duration-200"
                     )}
@@ -183,13 +183,13 @@ export function Footer() {
           // Spacing
           "mt-12 pt-8",
           // Border
-          "border-t border-gray-200"
+          "border-t border-border dark:border-border-dark"
         )}>
           <p className={cn(
             // Typography
             "text-sm text-center",
             // Colors
-            "text-gray-600"
+            "text-muted dark:text-muted-dark"
           )}>
             © {new Date().getFullYear()} Consultation. All rights reserved.
           </p>

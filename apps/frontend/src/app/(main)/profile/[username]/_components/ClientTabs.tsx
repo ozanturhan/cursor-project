@@ -13,17 +13,18 @@ interface ClientTabsProps {
 
 const tabClassName = ({ selected }: { selected: boolean }) =>
   cn(
-    'px-4 py-2.5 text-sm font-medium leading-5 text-neutral-700',
+    'px-4 py-2.5 text-sm font-medium leading-5',
+    'text-muted dark:text-muted-dark',
     'focus:outline-none',
     selected
-      ? 'border-b-2 border-primary-500'
-      : 'hover:text-neutral-900 hover:border-b-2 hover:border-neutral-300'
+      ? 'border-b-2 border-primary-500 text-foreground dark:text-foreground-dark'
+      : 'hover:text-foreground dark:hover:text-foreground-dark hover:border-b-2 hover:border-border dark:hover:border-border-dark'
   );
 
 export function ClientTabs({ tabs }: ClientTabsProps) {
   return (
     <Tab.Group>
-      <Tab.List className="flex space-x-1 border-b border-neutral-200 overflow-x-auto">
+      <Tab.List className="flex space-x-1 border-b border-border dark:border-border-dark overflow-x-auto">
         {tabs.map((tab) => (
           <Tab key={tab.label} className={tabClassName}>
             {tab.label}

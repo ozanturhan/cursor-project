@@ -2,18 +2,19 @@ import { cn } from '@/lib/utils';
 import { Navigation } from './Navigation';
 import { AuthButton } from './AuthButton';
 import { MobileMenu } from './MobileMenu';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 export async function Header() {
   return (
     <header className={cn(
       'sticky top-0 z-50 w-full',
-      'border-b border-neutral-200',
-      'bg-white/75 backdrop-blur-lg'
+      'border-b border-border dark:border-border-dark',
+      'bg-background/75 dark:bg-background-dark/75 backdrop-blur-lg'
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <a href="/" className="text-xl font-bold text-neutral-900">
+          <a href="/" className="text-xl font-bold text-foreground dark:text-foreground-dark">
             Logo
           </a>
 
@@ -22,8 +23,9 @@ export async function Header() {
             <Navigation />
           </div>
 
-          {/* Auth Button and Mobile Menu */}
+          {/* Auth Button, Theme Switcher, and Mobile Menu */}
           <div className="flex items-center gap-4">
+            <ThemeSwitcher />
             <AuthButton />
             <MobileMenu />
           </div>

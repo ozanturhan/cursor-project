@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SocialLinks } from './SocialLinks';
+import { cn } from '@/lib/utils';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -15,14 +16,14 @@ export function ProfileHeader({ profile, isOwnProfile, session }: ProfileHeaderP
   return (
     <div className="relative">
       {/* Cover Image */}
-      <div className="bg-neutral-200 h-32 sm:h-48" />
+      <div className="bg-neutral-200 dark:bg-neutral-800 h-32 sm:h-48" />
       
       {/* Profile Content */}
       <div className="px-4">
         {/* Avatar and Action Button Row */}
         <div className="flex justify-between items-start">
           <div className="relative -mt-16">
-            <div className="relative h-32 w-32 rounded-full overflow-hidden bg-white ring-4 ring-white">
+            <div className="relative h-32 w-32 rounded-full overflow-hidden bg-card dark:bg-card-dark ring-4 ring-card dark:ring-card-dark">
               {profile.image ? (
                 <Image
                   src={profile.image}
@@ -31,7 +32,7 @@ export function ProfileHeader({ profile, isOwnProfile, session }: ProfileHeaderP
                   className="object-cover"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center text-neutral-400 bg-neutral-100">
+                <div className="h-full w-full flex items-center justify-center text-muted dark:text-muted-dark bg-muted/10 dark:bg-muted-dark/10">
                   <svg className="h-16 w-16" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
@@ -65,14 +66,14 @@ export function ProfileHeader({ profile, isOwnProfile, session }: ProfileHeaderP
 
         {/* Profile Info */}
         <div className="mt-3">
-          <h1 className="text-xl font-bold text-neutral-900">{profile.fullName}</h1>
-          <p className="text-neutral-500">@{profile.username}</p>
+          <h1 className="text-xl font-bold text-foreground dark:text-foreground-dark">{profile.fullName}</h1>
+          <p className="text-muted dark:text-muted-dark">@{profile.username}</p>
           
           {profile.bio && (
-            <p className="mt-3 text-neutral-900">{profile.bio}</p>
+            <p className="mt-3 text-foreground dark:text-foreground-dark">{profile.bio}</p>
           )}
 
-          <div className="flex items-center gap-4 mt-3 text-neutral-600 text-sm">
+          <div className="flex items-center gap-4 mt-3 text-muted dark:text-muted-dark text-sm">
             {profile.location && (
               <div className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

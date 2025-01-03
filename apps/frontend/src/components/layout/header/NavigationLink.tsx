@@ -19,8 +19,8 @@ export function NavigationLink({ href, children }: NavigationLinkProps) {
       className={cn(
         'text-sm font-medium transition-colors duration-200',
         isActive
-          ? 'text-primary-600'
-          : 'text-gray-600 hover:text-primary-600'
+          ? 'text-primary-500 dark:text-primary-400'
+          : 'text-muted dark:text-muted-dark hover:text-foreground dark:hover:text-foreground-dark'
       )}
       aria-current={isActive ? 'page' : undefined}
     >

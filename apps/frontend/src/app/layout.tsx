@@ -1,14 +1,10 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from './providers';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Consultation Platform',
-  description: 'Connect with professionals for expert consultations',
-};
 
 export default function RootLayout({
   children,
@@ -16,11 +12,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script id="theme-script" strategy="beforeInteractive">
+          {`
+            let theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            }
+          `}
+        </Script>
+      </head>
+      <body className={`${inter.className} bg-page dark:bg-page-dark min-h-screen`}>
+        {children}
       </body>
     </html>
   );

@@ -6,11 +6,34 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: {
+          DEFAULT: '#ffffff',
+          dark: '#0A1019',
+        },
+        foreground: {
+          DEFAULT: '#0A1019',
+          dark: '#ffffff',
+        },
+        muted: {
+          DEFAULT: '#64748B',
+          dark: '#94A3B8',
+        },
+        border: {
+          DEFAULT: '#E2E8F0',
+          dark: '#1E293B',
+        },
+        card: {
+          DEFAULT: '#ffffff',
+          dark: '#0A1019',
+        },
+        page: {
+          DEFAULT: '#f8fafc',
+          dark: '#0A1019',
+        },
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
