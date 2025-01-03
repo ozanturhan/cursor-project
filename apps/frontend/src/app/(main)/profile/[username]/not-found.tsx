@@ -32,6 +32,9 @@ export default function ProfileNotFound() {
               <h1 className="text-xl font-bold text-neutral-900">@{username}</h1>
               <p className="mt-3 text-neutral-900">This account doesn't exist</p>
               <p className="mt-1 text-neutral-600">Try searching for another.</p>
+              <p className="text-base text-muted dark:text-muted-dark">
+                Sorry, we couldn&apos;t find the expert you&apos;re looking for.
+              </p>
             </div>
           </div>
         </div>

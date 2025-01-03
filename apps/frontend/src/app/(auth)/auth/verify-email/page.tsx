@@ -5,8 +5,9 @@ import { isAxiosError } from 'axios';
 export default async function VerifyEmailPage({
   searchParams,
 }: {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }) {
+  // Await the asynchronous `searchParams`
   const { token } = await searchParams;
 
   if (!token) {
@@ -17,11 +18,11 @@ export default async function VerifyEmailPage({
     await api.post('/auth/verify-email', { token });
     redirect('/auth/success/verification');
   } catch (error) {
-    // Only redirect to error page if it's an API error
+    // Handle API errors and redirect
     if (isAxiosError(error)) {
       redirect('/auth/error/verification-failed');
     }
-    // Re-throw other errors (like Next.js redirect errors)
+    // Re-throw other unexpected errors
     throw error;
   }
 }

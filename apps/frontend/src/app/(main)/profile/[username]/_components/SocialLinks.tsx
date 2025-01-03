@@ -1,4 +1,4 @@
-import { type Profile } from '@/types';
+import { type Profile } from '../_types/profile';
 import { cn } from '@/lib/utils';
 
 const socialIcons = {
@@ -34,47 +34,34 @@ interface SocialLinksProps {
 }
 
 export function SocialLinks({ profile }: SocialLinksProps) {
-  if (!profile.socialLinks || Object.keys(profile.socialLinks).length === 0) {
+  if (!profile.socialLinks?.length) {
     return null;
   }
 
   return (
     <div className="flex items-center -ml-1.5">
-      {(Object.entries(profile.socialLinks) as Array<[string, { id: string; platform: string; url: string }]>).map(
-        ([_, link]) =>
-          link && (
-            <a
-              key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "p-1.5",
-                "text-muted dark:text-muted-dark",
-                "hover:text-foreground dark:hover:text-foreground-dark",
-                "transition-colors duration-200"
-              )}
-              title={link.platform}
-            >
-              {socialIcons[link.platform.toLowerCase() as keyof typeof socialIcons] || (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              )}
-            </a>
-          )
-      )}
+      {profile.socialLinks.map((link) => {
+        const icon = socialIcons[link.platform.toLowerCase() as keyof typeof socialIcons];
+        if (!icon) return null;
+
+        return (
+          <a
+            key={link.id}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "p-1.5",
+              "text-muted dark:text-muted-dark",
+              "hover:text-foreground dark:hover:text-foreground-dark",
+              "transition-colors duration-200"
+            )}
+            title={link.platform}
+          >
+            {icon}
+          </a>
+        );
+      })}
     </div>
   );
 } 

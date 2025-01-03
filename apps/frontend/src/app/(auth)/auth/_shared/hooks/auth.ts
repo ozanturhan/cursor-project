@@ -1,12 +1,13 @@
-import { authApi } from '../api';
-import { AuthResponse } from '../types/auth-types';
+import { authApi } from '@/app/(auth)/auth/_shared/api/auth-api';
+import { AuthResponse } from '@/app/(auth)/auth/_shared/types/auth-types';
 import { useMutation } from '@tanstack/react-query';
 
 interface RegisterData {
   email: string;
   password: string;
-  fullName: string;
   username: string;
+  fullName: string;
+  roles: { role: 'CLIENT' | 'PROFESSIONAL' }[];
 }
 
 interface LoginData {

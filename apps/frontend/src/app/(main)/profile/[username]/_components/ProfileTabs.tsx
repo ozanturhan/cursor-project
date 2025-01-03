@@ -1,4 +1,4 @@
-import { type Profile } from '@/types';
+import { type Profile } from '../_types/profile';
 import { ClientTabs } from './ClientTabs';
 import { type ReactNode } from 'react';
 

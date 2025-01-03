@@ -1,4 +1,4 @@
-import { type Profile } from '@/types';
+import { type Profile } from '../_types/profile';
 import { type Session } from 'next-auth';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';

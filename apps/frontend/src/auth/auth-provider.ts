@@ -18,6 +18,8 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials: Record<"email" | "password", string> | undefined) {
+        console.log('credentials: ', credentials);
+
         if (!credentials?.email || !credentials?.password) return null;
         
         try {
@@ -25,13 +27,14 @@ export const authOptions: NextAuthOptions = {
             email: credentials.email,
             password: credentials.password,
           });
+
+          console.log('auth: ', auth);
           
           return {
             id: auth.user.id,
             email: auth.user.email,
             name: auth.user.fullName,
             username: auth.user.username,
-            roles: auth.user.roles,
             accessToken: auth.accessToken,
             refreshToken: auth.refreshToken,
             image: auth.user.image || null
@@ -79,7 +82,6 @@ export const authOptions: NextAuthOptions = {
           accessToken: auth.accessToken,
           refreshToken: auth.refreshToken,
           accessTokenExpires: Date.now() + 15 * 60 * 1000,
-          roles: auth.user.roles,
           username: auth.user.username
         };
       } catch {

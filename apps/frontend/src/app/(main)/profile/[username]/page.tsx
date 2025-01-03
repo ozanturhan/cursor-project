@@ -8,13 +8,13 @@ import {
 import { getProfile } from './_actions/profile';
 
 interface ProfilePageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = params;
+  const { username } = await params;
   const session = await getServerSession(authOptions);
   const profile = await getProfile(username);
 

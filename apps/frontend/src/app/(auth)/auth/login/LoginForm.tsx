@@ -7,22 +7,22 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { FormControl } from '@/components/ui/FormControl';
+import { useForm } from 'react-hook-form';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { register, handleSubmit } = useForm<LoginFormData>();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    };
 
     try {
       const result = await signIn('consultation-backend', {
@@ -40,7 +40,7 @@ export function LoginForm() {
       }
 
       router.push('/');
-    } catch (error) {
+    } catch (err) {
       setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -61,21 +61,21 @@ export function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <FormControl label="Email address" isRequired>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormControl label="Email address">
             <Input
+              {...register('email', { required: true })}
               type="email"
-              name="email"
               placeholder="Enter your email"
               autoComplete="email"
               isDisabled={isLoading}
             />
           </FormControl>
 
-          <FormControl label="Password" isRequired>
+          <FormControl label="Password">
             <Input
+              {...register('password', { required: true })}
               type="password"
-              name="password"
               placeholder="Enter your password"
               autoComplete="current-password"
               isDisabled={isLoading}
@@ -103,7 +103,7 @@ export function LoginForm() {
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-neutral-600">Don't have an account?</span>{' '}
+          <span className="text-neutral-600">Don&apos;t have an account?</span>{' '}
           <Link
             href="/auth/register"
             className="text-primary-600 hover:text-primary-500 font-medium"

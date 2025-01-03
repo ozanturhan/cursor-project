@@ -1,11 +1,46 @@
-'use client';
-
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Script from 'next/script';
 import { Providers } from './providers';
+import { Metadata, Viewport } from 'next';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A1019' },
+  ],
+};
+
+export const metadata: Metadata = {
+  title: 'Expert Consultation Platform',
+  description: 'Connect with expert consultants for professional guidance',
+};
+
+// This template literal will be evaluated at build time and injected into the HTML
+const criticalCss = `
+  :root {
+    color-scheme: light;
+    --background: 255 255 255;
+    --foreground: 10 16 25;
+  }
+  
+  .dark {
+    color-scheme: dark;
+    --background: 10 16 25;
+    --foreground: 255 255 255;
+  }
+
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+  }
+` as const;
 
 export default function RootLayout({
   children,
@@ -13,18 +48,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={inter.className}>
       <head>
-        <Script id="theme-script" strategy="beforeInteractive">
-          {`
-            let theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            if (theme === 'dark') {
-              document.documentElement.classList.add('dark');
-            }
-          `}
-        </Script>
+        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  let theme = localStorage.getItem('theme');
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    localStorage.setItem('theme', theme);
+                  }
+                  if (theme === 'dark') document.documentElement.classList.add('dark');
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className={`${inter.className} bg-page dark:bg-page-dark min-h-screen`}>
+      <body>
         <Providers>
           {children}
         </Providers>
